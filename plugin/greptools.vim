@@ -10,6 +10,14 @@ endif
 
 function! GrepAndReplaceAll(word)
     normal! mZ
+    call GrepForWord(a:word)
+    call ReplaceAllMatches(a:word)
+    call WriteQuickfixItems()
+    normal! `Z
+endfunction
+
+
+function! GrepForWord(word)
     let currentBufferFileExtension = expand('%:e')
     let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
     let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word))
@@ -17,9 +25,6 @@ function! GrepAndReplaceAll(word)
     let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs())
     execute grepCommand
     redraw!
-    call ReplaceAllMatches(a:word)
-    call WriteQuickfixItems()
-    normal! `Z
 endfunction
 
 
@@ -133,10 +138,10 @@ function! ReplaceAllMatches(word)
     echo '[*] Found' filesWithMatchesCount 'files with matches.'
     let replacementPrompt = '[+] Enter replacement for "' . a:word . '" >>> '
     let replacement = input(replacementPrompt)
-    execute 'cfdo %s/\C\<' . a:word . '\>/' . replacement . '/gc'
+    execute 'lfdo %s/\C\<' . a:word . '\>/' . replacement . '/gc'
 endfunction
 
 
 function! WriteQuickfixItems()
-    execute 'cfdo update'
+    execute 'lfdo! update'
 endfunction
