@@ -12,7 +12,7 @@ function! GrepAndReplaceAll(word)
     normal! mZ
     call GrepForWord(a:word)
     call ReplaceAllMatches(a:word)
-    call WriteQuickfixItems()
+    call WriteLocationListItems()
     normal! `Z
 endfunction
 
@@ -142,6 +142,6 @@ function! ReplaceAllMatches(word)
 endfunction
 
 
-function! WriteQuickfixItems()
+function! WriteLocationListItems()
     execute 'lfdo! update'
 endfunction
