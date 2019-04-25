@@ -3,8 +3,13 @@
 " Version:  0.1.0
 
 
+if !exists('g:excludeDirs') || type(g:excludeDirs) != v:t_list
+    let g:excludeDirs = []
+endif
+
+
 function! SearchTermToGrepPattern(searchTerm)
-    return '"\b'.a:searchTerm.'\b"'
+    return ' "\b'.a:searchTerm.'\b"'
 endfunction
 
 
@@ -14,11 +19,12 @@ endfunction
 
 
 function! GrepAndReplaceAll(searchTerm)
-    """ Optional args are 'include=' arguments to grep.
     normal! mZ
-    let l:pattern = SearchTermToGrepPattern(a:searchTerm)
-    let l:includes = ConstructGrepInclusions(a:000)
-    let l:grepCommand = ConstructGrepCommand(l:pattern, includes)
+    let grepPattern = SearchTermToGrepPattern(a:searchTerm)
+    let currentBufferFileExtension = expand('%:e')
+    let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
+    let includes = ConstructGrepInclusions(GetFileTypeGlob(filetypeGlobs))
+    let grepCommand = ConstructGrepCommand(grepPattern, includes)
     execute grepCommand
     redraw!
     call ReplaceAllMatches(a:searchTerm)
@@ -54,7 +60,6 @@ function! GrepForSearchTerm(searchTerm)
 endfunction
 
 
-
 function! ConstructGrepInclusions(inclusions)
     """ inclusions must be a list.
     if len(inclusions) == 0
@@ -62,19 +67,32 @@ function! ConstructGrepInclusions(inclusions)
     endif
     let includes = ''
     for inclusion in a:inclusions
-        let includes = includes . '--include="' . inclusion . '" '
+        let includes = includes . ' --include="'.inclusion.'"'
     endfor
     return includes
 endfunction
 
-function! ConstructGrepCommand(searchTerm, includes)
-    let grepFlags = '-r -m 1 -e'
-    let grepCommand = 'silent lgrep ' . grepFlags .  ' "\b' . a:searchTerm
-    let grepCommand = grepCommand . '\b" . ' . g:excludeDirs
+
+function! ConstructExcludeDirString()
+    if g:excludeDirs == []
+        return ''
+    endif
+    let excludeDirString = ''
+    for excludeDir in g:excludeDirs
+        let excludeDirString = excludeDirString.' --exclude-dir="'.excludeDir.'"'
+    endfor
+    return excludeDirString
+endfunction
+
+
+function! ConstructGrepCommand(grepPattern, includes, excludes)
+    let grepFlags = ' -r -m 1 -e'
+    let searchDir = ' .'
+    let grepCommand = 'silent lgrep'.grepFlags.a:grepPattern.searchDir.a:excludes
     if a:includes == ''
         return grepCommand
     else
-        let grepCommand = grepCommand . a:includes
+        let grepCommand = grepCommand.a:includes
     endif
     return grepCommand
 endfunction

@@ -2,8 +2,32 @@
 
 
 Execute (search term to grep pattern):
-  AssertEqual '"\btestTerm\b"', SearchTermToGrepPattern('testTerm')
+  AssertEqual ' "\btestTerm\b"', SearchTermToGrepPattern('testTerm')
 
 
 Execute (get file type glob):
   AssertEqual '*.py', GetFileTypeGlob('py')
+
+
+Execute (construct exclude dir string, single dir):
+  let g:excludeDirs = ['node_modules']
+  AssertEqual ' --exclude-dir="node_modules"', ConstructExcludeDirString()
+
+
+Execute (construct exclude dir string, multi dir):
+  let g:excludeDirs = ['node_modules', 'staticfiles']
+  AssertEqual ' --exclude-dir="node_modules" --exclude-dir="staticfiles"', ConstructExcludeDirString()
+
+
+Execute (construct exclude dir string, no dirs):
+  let g:excludeDirs = []
+  AssertEqual '', ConstructExcludeDirString()
+
+
+Execute (construct grep command):
+  let grepPattern = ' "\bpattern\b"'
+  let includes = ' --include="*.py"'
+  let excludes = ' --exclude-dir="node_modules"'
+  let actual = ConstructGrepCommand(grepPattern, includes, excludes)
+  let expected = 'silent lgrep -r -m 1 -e "\bpattern\b" . --exclude-dir="node_modules" --include="*.py"'
+  AssertEqual expected, actual
