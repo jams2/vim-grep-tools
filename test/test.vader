@@ -1,8 +1,8 @@
 # Requires vader.vim <https://github.com/junegunn/vader.vim>
 
 
-Execute (search term to grep pattern):
-  AssertEqual ' "\btestTerm\b"', SearchTermToGrepPattern('testTerm')
+Execute (word to grep pattern):
+  AssertEqual ' "\btestTerm\b"', WordToGrepPattern('testTerm')
 
 
 Execute (get file type glob):
@@ -11,7 +11,8 @@ Execute (get file type glob):
 
 Execute (construct exclude dir string from globals, single dir):
   let g:excludeDirs = ['node_modules']
-  AssertEqual ' --exclude-dir="node_modules"', ConstructExcludeDirArgsFromGlobalSetting()
+  AssertEqual ' --exclude-dir="node_modules"',
+    \ ConstructExcludeDirArgsFromGlobalSetting()
 
 
 Execute (construct exclude dir string from globals, multi dir):

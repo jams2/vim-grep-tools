@@ -8,24 +8,23 @@ if !exists('g:excludeDirs') || type(g:excludeDirs) != v:t_list
 endif
 
 
-function! GrepAndReplaceAll(searchTerm)
+function! GrepAndReplaceAll(word)
     normal! mZ
-    let grepPattern = SearchTermToGrepPattern(a:searchTerm)
     let currentBufferFileExtension = expand('%:e')
     let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
-    let grepCommand = ConstructGrepCommand(grepPattern)
+    let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word))
     let grepCommand = AddGrepArgs(grepCommand, ConstructIncludeArgs(filetypeGlobs))
     let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs())
     execute grepCommand
     redraw!
-    call ReplaceAllMatches(a:searchTerm)
+    call ReplaceAllMatches(a:word)
     call WriteQuickfixItems()
     normal! `Z
 endfunction
 
 
-function! SearchTermToGrepPattern(searchTerm)
-    return ' "\b'.a:searchTerm.'\b"'
+function! WordToGrepPattern(word)
+    return ' "\b'.a:word.'\b"'
 endfunction
 
 
@@ -126,15 +125,15 @@ function ConcatExcludeDirArgs(existingArgs, nextDir)
 endfunction
 
 
-function! ReplaceAllMatches(searchTerm)
+function! ReplaceAllMatches(word)
     let filesWithMatchesCount = len(getloclist(0))
     if filesWithMatchesCount == 0
         return
     endif
     echo '[*] Found' filesWithMatchesCount 'files with matches.'
-    let replacementPrompt = '[+] Enter replacement for "' . a:searchTerm . '" >>> '
+    let replacementPrompt = '[+] Enter replacement for "' . a:word . '" >>> '
     let replacement = input(replacementPrompt)
-    execute 'cfdo %s/\C\<' . a:searchTerm . '\>/' . replacement . '/gc'
+    execute 'cfdo %s/\C\<' . a:word . '\>/' . replacement . '/gc'
 endfunction
 
 
