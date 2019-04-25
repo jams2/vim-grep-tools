@@ -88,10 +88,11 @@ endfunction
 function! ConstructGrepCommand(grepPattern, includes, excludes)
     let grepFlags = ' -r -m 1 -e'
     let searchDir = ' .'
-    let grepCommand = 'silent lgrep'.grepFlags.a:grepPattern.searchDir.a:excludes
-    if a:includes == ''
-        return grepCommand
-    else
+    let grepCommand = 'silent lgrep'.grepFlags.a:grepPattern.searchDir
+    if a:excludes != ''
+        let grepCommand = grepCommand.a:excludes
+    endif
+    if a:includes != ''
         let grepCommand = grepCommand.a:includes
     endif
     return grepCommand
