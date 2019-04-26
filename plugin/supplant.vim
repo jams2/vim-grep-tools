@@ -6,8 +6,12 @@
 " to a leading-space convention.
 
 
-if !exists('g:grepToolsExcludeDirs') || type(g:grepToolsExcludeDirs) != v:t_list
-    let g:grepToolsExcludeDirs = []
+if !exists('g:supplantExcludeDirs') || type(g:supplantExcludeDirs) != v:t_list
+    let g:supplantExcludeDirs = []
+endif
+
+if !exists('g:supplantIgnoreCase')
+    let g:supplantIgnoreCase = 0
 endif
 
 
@@ -113,11 +117,11 @@ endfunction
 
 
 function ConstructExcludeDirArgsFromGlobalSetting()
-    if len(g:grepToolsExcludeDirs) == 0
+    if len(g:supplantExcludeDirs) == 0
         return ''
     endif
     let excludeDirArgs = ''
-    for excludeDir in g:grepToolsExcludeDirs
+    for excludeDir in g:supplantExcludeDirs
         let excludeDirArgs = ConcatExcludeDirArgs(excludeDirArgs, excludeDir)
     endfor
     return excludeDirArgs
@@ -144,11 +148,17 @@ endfunction
 
 
 function! ReplaceAllMatches(word, substitute, flags)
-    let filesWithMatchesCount = len(getloclist(0))
-    if filesWithMatchesCount == 0
+    if len(getloclist(0)) == 0
         return
     endif
-    execute 'lfdo %s/\C\<'.a:word.'\>/'.a:substitute.'/'.a:flags
+    let locListSubstituteCommand = GetLocListSubstituteCommand(a:word, a:substitute, a:flags)
+    execute locListSubstituteCommand
+endfunction
+
+
+function! GetLocListSubstituteCommand(word, substitute, flags)
+    let caseSensitiveFlag = g:supplantIgnoreCase ? '\c' : '\C'
+    return 'lfdo %s/'.caseSensitiveFlag.'\<'.a:word.'\>/'.a:substitute.'/'.a:flags
 endfunction
 
 

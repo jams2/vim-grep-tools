@@ -32,6 +32,7 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
 - [Vader](https://github.com/junegunn/vader.vim) (testing)
 
 
+
 ## Usage
 
 - Ensure GNU Grep is your grepprg. For OSX users, you could put this in your .vimrc:
@@ -45,6 +46,15 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
 - To find all, execute `:SupplantFindAll word`
 
 
+
+## Configuration
+
+- To add default excluded directories (passed as `--exclude-dir` options to grep);
+    - `let g:supplantExcludeDirs = ['exclude_me', 'and_me']`
+- To set case-sensitivity;
+    - `let g:supplantIgnoreCase = 0` (in {0, 1})
+
+
 Suggested mappings:
 ```
 nnoremap <leader>yg "pyiw :Supplant/<C-r>p
@@ -52,5 +62,3 @@ vnoremap <leader>yg "py :Supplant/<C-r>p
 nnoremap <leader>ff "pyiw :SupplantFindAll <C-r>p<CR>
 vnoremap <leader>ff "py :SupplantFindAll <C-r>p<CR>
 ```
-
-- `lgrep` is used, so results will populate the locationlist.
