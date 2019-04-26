@@ -1,16 +1,16 @@
-# vim-super-substitute
+# vim-supplant
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Version: 0.1.0](https://img.shields.io/badge/version-0.1.0-brightgreen.svg)](https://github.com/jams2/vim-super-substitute)
 
 
-While using VIM as my primary text editor, I find myself often using grep from within VIM to find all occurences of a word. To find all occurences in the project directory, I would end up executing:
+While using VIM as my primary text editor, I often find myself using `:grep` to find all occurences of a word. To find all occurences in the project directory, I will execute something like;
 
 
 `:grep -ri "\bSomeClassName\b" . --include="*.py" --exclude-dir="staticfiles" --exclude-dir="node_modules"`
 
 
-... followed by:
+... followed by;
 
 
 `:cdo s/\<SomeClassName\>/NewClassName/g`
@@ -37,14 +37,15 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
         set grepprg=ggrep\ -n
     endif
     ```
-- To find and replace all, execute `:GTReplaceAll oldWord newWord`
-- To find all, execute `:GTFindAll word`
+- To find and replace all, execute `:Supplant/oldWord/newWord/flags`
+    - where flags are `:substitute` compatible.
+- To find all, execute `:SupplantFindAll word`
 
 
 Suggested mappings:
 ```
-nnoremap <leader>yg "pyiw :GTReplaceAll <C-r>p 
-vnoremap <leader>yg "py :GTReplaceAll <C-r>p 
+nnoremap <leader>yg "pyiw :Supplant/<C-r>p
+vnoremap <leader>yg "py :Supplant/<C-r>p
 nnoremap <leader>ff "pyiw :GTFindAll <C-r>p<CR>
 vnoremap <leader>ff "py :GTFindAll <C-r>p<CR>
 ```

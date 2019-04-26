@@ -1,4 +1,4 @@
-" supersubstitute.vim
+" supplant.vim - use grep to :substitute across files
 " Author:   Joshua Munn <https://www.joshuamunn.com>
 " Version:  0.1.0
 " 
@@ -11,8 +11,8 @@ if !exists('g:grepToolsExcludeDirs') || type(g:grepToolsExcludeDirs) != v:t_list
 endif
 
 
-command! -nargs=1 GTReplaceAll :call FindAndReplaceAll(<q-args>)
-command! -nargs=1 GTFindAll :call FindAll(<f-args>)
+command! -nargs=1 Supplant :call FindAndReplaceAll(<q-args>)
+command! -nargs=1 SupplantFindAll :call FindAll(<f-args>)
 
 
 function! FindAndReplaceAll(...)
