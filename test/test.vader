@@ -10,19 +10,19 @@ Execute (get file type glob):
 
 
 Execute (construct exclude dir string from globals, single dir):
-  let g:excludeDirs = ['node_modules']
+  let g:supplantExcludeDirs = ['node_modules']
   AssertEqual ' --exclude-dir="node_modules"',
     \ ConstructExcludeDirArgsFromGlobalSetting()
 
 
 Execute (construct exclude dir string from globals, multi dir):
-  let g:excludeDirs = ['node_modules', 'staticfiles']
+  let g:supplantExcludeDirs = ['node_modules', 'staticfiles']
   AssertEqual ' --exclude-dir="node_modules" --exclude-dir="staticfiles"',
     \ ConstructExcludeDirArgsFromGlobalSetting()
 
 
 Execute (construct exclude dir string from globals, no dirs):
-  let g:excludeDirs = []
+  let g:supplantExcludeDirs = []
   AssertEqual '', ConstructExcludeDirArgsFromGlobalSetting()
 
 
@@ -30,6 +30,7 @@ Execute (construct grep command):
   let grepPattern = ' "\bpattern\b"'
   let includes = ' --include="*.py"'
   let excludes = ' --exclude-dir="node_modules"'
-  let actual = ConstructGrepCommand(grepPattern)
+  let FlagGetter = function('GetCaseSensitiveGrepFlags')
+  let actual = ConstructGrepCommand(grepPattern, FlagGetter)
   let expected = 'silent lgrep -r -m 1 -e "\bpattern\b" .'
   AssertEqual expected, actual
