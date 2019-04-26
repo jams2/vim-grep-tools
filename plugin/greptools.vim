@@ -6,29 +6,42 @@
 " to a leading-space convention.
 
 
-if !exists('g:excludeDirs') || type(g:excludeDirs) != v:t_list
-    let g:excludeDirs = []
+if !exists('g:grepToolsExcludeDirs') || type(g:grepToolsExcludeDirs) != v:t_list
+    let g:grepToolsExcludeDirs = []
 endif
 
 
-function! GrepAndReplaceAll(word)
+command! -nargs=+ GTReplaceAll :call FindAndReplaceAll(<f-args>)
+command! -nargs=1 GTFindAll :call FindAll(<f-args>)
+
+
+function! FindAndReplaceAll(word, replacement)
     normal! mZ
     call GrepForWord(a:word)
-    call ReplaceAllMatches(a:word)
+    redraw!
+    call ReplaceAllMatches(a:word, a:replacement)
     call WriteLocationListItems()
     normal! `Z
+endfunction
+
+
+function! FindAll(word)
+    normal! mZ
+    call GrepForWord(a:word)
+    redraw!
+    normal! `Z
+    lopen
 endfunction
 
 
 function! GrepForWord(word)
     let currentBufferFileExtension = expand('%:e')
     let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
-    let flagGetter = function('GetCaseSensitiveGrepFlags')
-    let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), flagGetter)
+    let FlagGetter = function('GetCaseSensitiveGrepFlags')
+    let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), FlagGetter)
     let grepCommand = AddGrepArgs(grepCommand, ConstructIncludeArgs(filetypeGlobs))
     let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs())
     execute grepCommand
-    redraw!
 endfunction
 
 
@@ -42,8 +55,8 @@ function! GetFileTypeGlob(fileExtension)
 endfunction
 
 
-function! ConstructGrepCommand(grepPattern, flagGetter)
-    let grepFlags = a:flagGetter()
+function! ConstructGrepCommand(grepPattern, FlagGetter)
+    let grepFlags = a:FlagGetter()
     let searchDir = ' .'
     return 'silent lgrep'.grepFlags.a:grepPattern.searchDir
 endfunction
@@ -61,33 +74,6 @@ endfunction
 
 function! AddGrepArgs(grepCommand, grepArgs)
     return a:grepCommand.a:grepArgs
-endfunction
-
-
-function! GrepForAnyInMatchingFiletype()
-    let filetype = '*.' . expand('%:e')
-    normal! mZ
-    let includes = ConstructIncludeArgs([filetype])
-    let searchTerm = input('Enter search term >>> ')
-    let grepCommand = 'silent lgrep -r -e "\b' . searchTerm . '\b" . ' . g:excludeDirs . includes
-    execute grepCommand
-    redraw!
-    echo 'Found ' . len(getloclist(0)) . ' occurences of "' . searchTerm . '".'
-    normal! `Z
-endfunction
-
-
-function! GrepForSearchTerm(searchTerm)
-    """ grep for all occurences in files of same type as buffer.
-    normal! mZ
-    let filetype = '*.' . expand('%:e')
-    let includeArgs = ConstructIncludeArgs([filetype])
-    let grepCommand = 'silent lgrep -r -e "\b' . a:searchTerm . '\b" . ' . g:excludeDirs . includeArgs
-    execute grepCommand
-    redraw!
-    normal! `Z
-    let found = len(getloclist(0))
-    echo '[+] Found ' . found . ' occurences of "' . a:searchTerm . '"'
 endfunction
 
 
@@ -114,11 +100,11 @@ endfunction
 
 
 function ConstructExcludeDirArgsFromGlobalSetting()
-    if len(g:excludeDirs) == 0
+    if len(g:grepToolsExcludeDirs) == 0
         return ''
     endif
     let excludeDirArgs = ''
-    for excludeDir in g:excludeDirs
+    for excludeDir in g:grepToolsExcludeDirs
         let excludeDirArgs = ConcatExcludeDirArgs(excludeDirArgs, excludeDir)
     endfor
     return excludeDirArgs
@@ -144,15 +130,13 @@ function ConcatExcludeDirArgs(existingArgs, nextDir)
 endfunction
 
 
-function! ReplaceAllMatches(word)
+function! ReplaceAllMatches(word, replacement)
     let filesWithMatchesCount = len(getloclist(0))
     if filesWithMatchesCount == 0
         return
     endif
     echo '[*] Found' filesWithMatchesCount 'files with matches.'
-    let replacementPrompt = '[+] Enter replacement for "' . a:word . '" >>> '
-    let replacement = input(replacementPrompt)
-    execute 'lfdo %s/\C\<' . a:word . '\>/' . replacement . '/gc'
+    execute 'lfdo %s/\C\<' . a:word . '\>/' . a:replacement . '/gc'
 endfunction
 
 

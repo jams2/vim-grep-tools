@@ -40,3 +40,17 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
         set grepprg=ggrep\ -n
     endif
     ```
+- To find and replace all, execute `:GTReplaceAll oldWord newWord`
+- To find all, execute `:GTFindAll word`
+
+
+Suggested mappings:
+```
+nnoremap <leader>yg "pyiw :GTReplaceAll <C-r>p 
+vnoremap <leader>yg "py :GTReplaceAll <C-r>p 
+nnoremap <leader>ff "pyiw :GTFindAll <C-r>p<CR>
+vnoremap <leader>ff "py :GTFindAll <C-r>p<CR>
+```
+
+- `lgrep` is used, so results will populate the locationlist.
+
