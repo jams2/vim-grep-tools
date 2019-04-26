@@ -23,3 +23,20 @@ That's 144 keystrokes. That should be automated. So, as the story goes, it ends 
 
 
 This is a simple tool with narrow scope. If someone else finds it useful, that's fantastic. Please raise issues and requests and I'll do my best to deal with them.
+
+
+
+## Requirements
+
+- GNU Grep (on OSX, this can be obtained via `brew install grep`)
+- [Vader](https://github.com/junegunn/vader.vim) (testing)
+
+
+## Usage
+
+- Ensure GNU Grep is your grepprg, e.g.:
+    ```
+    if executable("ggrep")
+        set grepprg=ggrep\ -n
+    endif
+    ```
