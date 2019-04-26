@@ -1,6 +1,9 @@
 " greptools.vim - grep tools/helpers
 " Author:   Joshua Munn <https://www.joshuamunn.com>
 " Version:  0.1.0
+" 
+" When constructing strings that might be concatenated together, stick
+" to a leading-space convention.
 
 
 if !exists('g:excludeDirs') || type(g:excludeDirs) != v:t_list
@@ -20,7 +23,8 @@ endfunction
 function! GrepForWord(word)
     let currentBufferFileExtension = expand('%:e')
     let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
-    let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word))
+    let flagGetter = function('GetCaseSensitiveGrepFlags')
+    let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), flagGetter)
     let grepCommand = AddGrepArgs(grepCommand, ConstructIncludeArgs(filetypeGlobs))
     let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs())
     execute grepCommand
@@ -38,10 +42,20 @@ function! GetFileTypeGlob(fileExtension)
 endfunction
 
 
-function! ConstructGrepCommand(grepPattern)
-    let grepFlags = ' -r -m 1 -e'
+function! ConstructGrepCommand(grepPattern, flagGetter)
+    let grepFlags = a:flagGetter()
     let searchDir = ' .'
     return 'silent lgrep'.grepFlags.a:grepPattern.searchDir
+endfunction
+
+
+function! GetCaseSensitiveGrepFlags()
+    return ' -r -m 1 -e'
+endfunction
+
+
+function! GetCaseInsensitiveGrepFlags()
+    return ' -ri -m 1 -e'
 endfunction
 
 
