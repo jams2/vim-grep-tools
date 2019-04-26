@@ -1,3 +1,3 @@
 #!/bin/sh
 
-vim -c 'Vader! *'
+vim -Nu vimrc -c 'Vader! *'
