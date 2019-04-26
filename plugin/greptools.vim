@@ -23,8 +23,8 @@ endfunction
 function! GrepForWord(word)
     let currentBufferFileExtension = expand('%:e')
     let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
-    let flagGetter = function('GetCaseSensitiveGrepFlags')
-    let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), flagGetter)
+    let FlagGetter = function('GetCaseSensitiveGrepFlags')
+    let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), FlagGetter)
     let grepCommand = AddGrepArgs(grepCommand, ConstructIncludeArgs(filetypeGlobs))
     let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs())
     execute grepCommand
@@ -42,8 +42,8 @@ function! GetFileTypeGlob(fileExtension)
 endfunction
 
 
-function! ConstructGrepCommand(grepPattern, flagGetter)
-    let grepFlags = a:flagGetter()
+function! ConstructGrepCommand(grepPattern, FlagGetter)
+    let grepFlags = a:FlagGetter()
     let searchDir = ' .'
     return 'silent lgrep'.grepFlags.a:grepPattern.searchDir
 endfunction
