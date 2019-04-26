@@ -1,10 +1,13 @@
-# vim-supplant
+# [vim-supplant](https://github.com/jams2/vim-supplant)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Version: 0.1.0](https://img.shields.io/badge/version-0.1.0-brightgreen.svg)](https://github.com/jams2/vim-super-substitute)
 
 
-While using VIM as my primary text editor, I often find myself using `:grep` to find all occurences of a word. To find all occurences in the project directory, I will execute something like;
+`vim-supplant` is a tool for replacing all occurences of a word in the current working directory, using the familiar syntax of VIM's `:substitute`.
+
+
+While using VIM as my primary text editor, I often find myself using `:grep` to find all occurences of a word. I will execute something like;
 
 
 `:grep -ri "\bSomeClassName\b" . --include="*.py" --exclude-dir="staticfiles" --exclude-dir="node_modules"`
@@ -16,10 +19,10 @@ While using VIM as my primary text editor, I often find myself using `:grep` to 
 `:cdo s/\<SomeClassName\>/NewClassName/g`
 
 
-That's 144 keystrokes. That should be automated. So, as the story goes, it ends up in my .vimrc. Then, the inevitable .vimrc bloat increases, so it ends up becoming a plugin, and here we are.
+That's 144 keystrokes, and should be automated.
 
 
-This is a simple tool with narrow scope. If someone else finds it useful, that's fantastic. Please raise issues and requests and I'll do my best to deal with them.
+This is a simple tool with narrow scope. If someone else finds it useful, that's fantastic. Feel free to raise issues and requests and I'll do my best to deal with them.
 
 
 
@@ -46,8 +49,8 @@ Suggested mappings:
 ```
 nnoremap <leader>yg "pyiw :Supplant/<C-r>p
 vnoremap <leader>yg "py :Supplant/<C-r>p
-nnoremap <leader>ff "pyiw :GTFindAll <C-r>p<CR>
-vnoremap <leader>ff "py :GTFindAll <C-r>p<CR>
+nnoremap <leader>ff "pyiw :SupplantFindAll <C-r>p<CR>
+vnoremap <leader>ff "py :SupplantFindAll <C-r>p<CR>
 ```
 
 - `lgrep` is used, so results will populate the locationlist.
