@@ -34,7 +34,7 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
 
 ## Usage
 
-- Ensure GNU Grep is your grepprg, e.g.:
+- Ensure GNU Grep is your grepprg. For OSX users, you could put this in your .vimrc:
     ```
     if executable("ggrep")
         set grepprg=ggrep\ -n
