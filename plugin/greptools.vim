@@ -11,17 +11,30 @@ if !exists('g:grepToolsExcludeDirs') || type(g:grepToolsExcludeDirs) != v:t_list
 endif
 
 
-command! -nargs=+ GTReplaceAll :call FindAndReplaceAll(<f-args>)
+command! -nargs=1 GTReplaceAll :call FindAndReplaceAll(<q-args>)
 command! -nargs=1 GTFindAll :call FindAll(<f-args>)
 
 
-function! FindAndReplaceAll(word, replacement)
+function! FindAndReplaceAll(...)
+    if a:0 != 1
+        throw 'Expected one arg following :substitute syntax'
+    endif
     normal! mZ
-    call GrepForWord(a:word)
+    let [l:word, l:substitute, l:flags] = s:ParseArgs(a:1)
+    call GrepForWord(l:word)
     redraw!
-    call ReplaceAllMatches(a:word, a:replacement)
+    call ReplaceAllMatches(l:word, l:substitute, l:flags)
     call WriteLocationListItems()
     normal! `Z
+endfunction
+
+
+function! s:ParseArgs(argString)
+    let args = split(a:argString, '/')
+    if len(args) < 3
+        let args = args + ['']
+    endif
+    return args
 endfunction
 
 
@@ -130,13 +143,12 @@ function ConcatExcludeDirArgs(existingArgs, nextDir)
 endfunction
 
 
-function! ReplaceAllMatches(word, replacement)
+function! ReplaceAllMatches(word, substitute, flags)
     let filesWithMatchesCount = len(getloclist(0))
     if filesWithMatchesCount == 0
         return
     endif
-    echo '[*] Found' filesWithMatchesCount 'files with matches.'
-    execute 'lfdo %s/\C\<' . a:word . '\>/' . a:replacement . '/gc'
+    execute 'lfdo %s/\C\<'.a:word.'\>/'.a:substitute.'/'.a:flags
 endfunction
 
 

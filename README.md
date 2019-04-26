@@ -53,4 +53,3 @@ vnoremap <leader>ff "py :GTFindAll <C-r>p<CR>
 ```
 
 - `lgrep` is used, so results will populate the locationlist.
-
