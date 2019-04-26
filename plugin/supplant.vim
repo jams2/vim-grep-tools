@@ -24,7 +24,7 @@ function! FindAndReplaceAll(...)
         throw 'Expected one arg following :substitute syntax'
     endif
     normal! mZ
-    let [l:word, l:substitute, l:flags] = s:ParseArgs(a:1)
+    let [l:word, l:substitute, l:flags] = ParseArgs(a:1)
     call GrepForWord(l:word)
     redraw!
     call ReplaceAllMatches(l:word, l:substitute, l:flags)
@@ -33,7 +33,7 @@ function! FindAndReplaceAll(...)
 endfunction
 
 
-function! s:ParseArgs(argString)
+function! ParseArgs(argString)
     let args = split(a:argString, '/')
     if len(args) < 3
         let args = args + ['']

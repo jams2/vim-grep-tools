@@ -34,3 +34,46 @@ Execute (construct grep command):
   let actual = ConstructGrepCommand(grepPattern, FlagGetter)
   let expected = 'silent lgrep -r -m 1 -e "\bpattern\b" .'
   AssertEqual expected, actual
+
+
+Execute (parse args with flags):
+  let argString = '/oldWord/newWord/flags'
+  let expected = ['oldWord', 'newWord', 'flags']
+  let actual = ParseArgs(argString)
+  AssertEqual expected, actual
+
+
+Execute (parse args without flags):
+  let argString = '/oldWord/newWord'
+  let expected = ['oldWord', 'newWord', '']
+  let actual = ParseArgs(argString)
+  AssertEqual expected, actual
+
+
+Execute (parse args without flags, and trailing slash):
+  let argString = '/oldWord/newWord/'
+  let expected = ['oldWord', 'newWord', '']
+  let actual = ParseArgs(argString)
+  AssertEqual expected, actual
+
+
+Execute (parse args empty substitute field):
+  let argString = '/oldWord//flags'
+  let expected = ['oldWord', '', 'flags']
+  let actual = ParseArgs(argString)
+  AssertEqual expected, actual
+
+
+Execute (parse args empty substitute field and no flags):
+  let argString = '/oldWord//'
+  let expected = ['oldWord', '', '']
+  let actual = ParseArgs(argString)
+  AssertEqual expected, actual
+
+
+Execute (return case sensitive grep flags):
+  AssertEqual ' -r -m 1 -e', GetCaseSensitiveGrepFlags()
+
+
+Execute (return case insensitive grep flags):
+  AssertEqual ' -ri -m 1 -e', GetCaseInsensitiveGrepFlags()
