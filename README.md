@@ -1,10 +1,7 @@
-# vim-grep-tools
+# vim-super-substitute
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Version: 0.1.0](https://img.shields.io/badge/version-0.1.0-brightgreen.svg)](https://github.com/jams2/vim-grep-tools)
-
-
-A collection of small tools to make the use of grep within a project more convenient.
+[![Version: 0.1.0](https://img.shields.io/badge/version-0.1.0-brightgreen.svg)](https://github.com/jams2/vim-super-substitute)
 
 
 While using VIM as my primary text editor, I find myself often using grep from within VIM to find all occurences of a word. To find all occurences in the project directory, I would end up executing:

@@ -1,4 +1,4 @@
-" greptools.vim - grep tools/helpers
+" supersubstitute.vim
 " Author:   Joshua Munn <https://www.joshuamunn.com>
 " Version:  0.1.0
 " 
