@@ -147,3 +147,47 @@ Execute (ConstructExcludeDirArgs with args and globals):
   let g:supplantExcludeDirs = ['node_modules']
   let expected = ' --exclude-dir="node_modules" --exclude-dir="staticfiles"'
   AssertEqual expected, ConstructExcludeDirArgs('staticfiles')
+
+
+Execute (AddExtraExcludeDirArgs throws):
+  AssertThrows AddExtraExcludeDirArgs('existing', 'not a list')
+
+
+Execute (AddExtraExcludeDirArgs no extras):
+  let expected = ' --exclude-dir="node_modules"'
+  AssertEqual expected, AddExtraExcludeDirArgs(expected, [])
+
+
+Execute (AddExtraExcludeDirArgs):
+  let existing = ' --exclude-dir="node_modules"'
+  let extras = ['static', 'staticfiles']
+  let expected = ' --exclude-dir="node_modules" --exclude-dir="static" --exclude-dir="staticfiles"'
+  AssertEqual expected, AddExtraExcludeDirArgs(existing, extras)
+
+
+Execute (GetLocListSubstituteCommand no flags, case insensitive):
+  let g:supplantIgnoreCase = 1
+  let expected = 'lfdo %s/\c\<word\>/replacement/'
+  AssertEqual expected,
+    \ GetLocListSubstituteCommand('word', 'replacement', '')
+
+
+Execute (GetLocListSubstituteCommand no flags, case sensitive):
+  let g:supplantIgnoreCase = 0
+  let expected = 'lfdo %s/\C\<word\>/replacement/'
+  AssertEqual expected,
+    \ GetLocListSubstituteCommand('word', 'replacement', '')
+
+
+Execute (GetLocListSubstituteCommand case sensitive):
+  let g:supplantIgnoreCase = 0
+  let expected = 'lfdo %s/\C\<word\>/replacement/gc'
+  AssertEqual expected,
+    \ GetLocListSubstituteCommand('word', 'replacement', 'gc')
+
+
+Execute (GetLocListSubstituteCommand case sensitive, no replacement):
+  let g:supplantIgnoreCase = 0
+  let expected = 'lfdo %s/\C\<word\>//gc'
+  AssertEqual expected,
+    \ GetLocListSubstituteCommand('word', '', 'gc')

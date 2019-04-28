@@ -154,7 +154,7 @@ function AddExtraExcludeDirArgs(existingArgs, extraDirs)
     if type(a:extraDirs) != v:t_list
         throw "expected type <list> for arg extraDirs"
     elseif len(a:extraDirs) == 0
-        return existingArgs
+        return a:existingArgs
     endif
     let excludeDirArgs = a:existingArgs
     for extraDir in a:extraDirs
