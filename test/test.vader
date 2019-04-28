@@ -28,10 +28,8 @@ Execute (construct exclude dir string from globals, no dirs):
 
 Execute (construct grep command):
   let grepPattern = ' "\bpattern\b"'
-  let includes = ' --include="*.py"'
-  let excludes = ' --exclude-dir="node_modules"'
-  let FlagGetter = function('GetCaseSensitiveGrepFlags')
-  let actual = ConstructGrepCommand(grepPattern, FlagGetter)
+  let grepFlags = ' -r -m 1 -e'
+  let actual = ConstructGrepCommand(grepPattern, grepFlags)
   let expected = 'silent lgrep -r -m 1 -e "\bpattern\b" .'
   AssertEqual expected, actual
 
@@ -71,9 +69,33 @@ Execute (parse args empty substitute field and no flags):
   AssertEqual expected, actual
 
 
-Execute (return case sensitive grep flags):
-  AssertEqual ' -r -m 1 -e', GetCaseSensitiveGrepFlags()
+Execute (get case sensitive grep flags, with max count):
+  AssertEqual ' -r -m1 -e', GetCaseSensitiveGrepFlags(1)
 
 
-Execute (return case insensitive grep flags):
-  AssertEqual ' -ri -m 1 -e', GetCaseInsensitiveGrepFlags()
+Execute (get case sensitive grep flags, no max count):
+  AssertEqual ' -r -e', GetCaseSensitiveGrepFlags(-1)
+
+
+Execute (get case insensitive grep flags, with max count):
+  AssertEqual ' -ri -m1 -e', GetCaseInsensitiveGrepFlags(1)
+
+
+Execute (get case insensitive grep flags, no max count):
+  AssertEqual ' -ri -e', GetCaseInsensitiveGrepFlags(-1)
+
+
+Execute (ShouldReplaceMatches with replacement and flags):
+  AssertEqual 1, ShouldReplaceMatches('replacement', 'flags')
+
+
+Execute (ShouldReplaceMatches with replacement, no flags):
+  AssertEqual 1, ShouldReplaceMatches('replacement', '')
+
+
+Execute (ShouldReplaceMatches with no replacement, flags):
+  AssertEqual 1, ShouldReplaceMatches('', 'flags')
+
+
+Execute (!ShouldReplaceMatches with no replacement or flags):
+  AssertEqual 0, ShouldReplaceMatches('', '')

@@ -19,17 +19,25 @@ command! -nargs=1 Supplant :call FindAndReplaceAll(<q-args>)
 command! -nargs=1 SupplantFindAll :call FindAll(<f-args>)
 
 
-function! FindAndReplaceAll(...)
-    if a:0 != 1
-        throw 'Expected one arg following :substitute syntax'
-    endif
+function! FindAndReplaceAll(substituteCommand)
     normal! mZ
-    let [l:word, l:substitute, l:flags] = ParseArgs(a:1)
-    call GrepForWord(l:word)
+    let [word, replacement, flags] = ParseArgs(a:substituteCommand)
+    call GrepForWord(word, 1)
     redraw!
-    call ReplaceAllMatches(l:word, l:substitute, l:flags)
+    call ReplaceAllMatches(word, replacement, flags)
     call WriteLocationListItems()
     normal! `Z
+endfunction
+
+
+function ShouldReplaceMatches(replacement, flags)
+    if a:replacement != ''
+        return 1
+    elseif a:flags != ''
+        return 1
+    else
+        return 0
+    endif
 endfunction
 
 
@@ -44,18 +52,22 @@ endfunction
 
 function! FindAll(word)
     normal! mZ
-    call GrepForWord(a:word)
+    call GrepForWord(a:word, -1)
     redraw!
     normal! `Z
     lopen
 endfunction
 
 
-function! GrepForWord(word)
+function! GrepForWord(word, maxCount)
     let currentBufferFileExtension = expand('%:e')
     let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
-    let FlagGetter = function('GetCaseSensitiveGrepFlags')
-    let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), FlagGetter)
+    if g:supplantIgnoreCase
+        let flags = GetCaseInsensitiveGrepFlags(maxCount)
+    else
+        let flags = GetCaseSensitiveGrepFlags(maxCount)
+    endif
+    let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), flags)
     let grepCommand = AddGrepArgs(grepCommand, ConstructIncludeArgs(filetypeGlobs))
     let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs())
     execute grepCommand
@@ -72,20 +84,27 @@ function! GetFileTypeGlob(fileExtension)
 endfunction
 
 
-function! ConstructGrepCommand(grepPattern, FlagGetter)
-    let grepFlags = a:FlagGetter()
+function! ConstructGrepCommand(grepPattern, grepFlags)
     let searchDir = ' .'
-    return 'silent lgrep'.grepFlags.a:grepPattern.searchDir
+    return 'silent lgrep'.a:grepFlags.a:grepPattern.searchDir
 endfunction
 
 
-function! GetCaseSensitiveGrepFlags()
-    return ' -r -m 1 -e'
+function! GetCaseSensitiveGrepFlags(maxCount)
+    let flags = ' -r'
+    if a:maxCount > 0
+        let flags = flags.' -m'.a:maxCount
+    endif
+    return flags.' -e'
 endfunction
 
 
-function! GetCaseInsensitiveGrepFlags()
-    return ' -ri -m 1 -e'
+function! GetCaseInsensitiveGrepFlags(maxCount)
+    let flags = ' -ri'
+    if a:maxCount > 0
+        let flags = flags.' -m'.a:maxCount
+    endif
+    return flags.' -e'
 endfunction
 
 
@@ -147,18 +166,18 @@ function ConcatExcludeDirArgs(existingArgs, nextDir)
 endfunction
 
 
-function! ReplaceAllMatches(word, substitute, flags)
+function! ReplaceAllMatches(word, replacement, flags)
     if len(getloclist(0)) == 0
         return
     endif
-    let locListSubstituteCommand = GetLocListSubstituteCommand(a:word, a:substitute, a:flags)
+    let locListSubstituteCommand = GetLocListSubstituteCommand(a:word, a:replacement, a:flags)
     execute locListSubstituteCommand
 endfunction
 
 
-function! GetLocListSubstituteCommand(word, substitute, flags)
+function! GetLocListSubstituteCommand(word, replacement, flags)
     let caseSensitiveFlag = g:supplantIgnoreCase ? '\c' : '\C'
-    return 'lfdo %s/'.caseSensitiveFlag.'\<'.a:word.'\>/'.a:substitute.'/'.a:flags
+    return 'lfdo %s/'.caseSensitiveFlag.'\<'.a:word.'\>/'.a:replacement.'/'.a:flags
 endfunction
 
 
