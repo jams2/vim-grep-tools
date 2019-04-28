@@ -15,22 +15,29 @@ if !exists('g:supplantIgnoreCase')
 endif
 
 
-command! -nargs=1 Supplant :call FindAndReplaceAll(<q-args>)
-command! -nargs=1 SupplantFindAll :call FindAll(<f-args>)
+let s:HAS_MAX_COUNT = 1
 
 
-function! FindAndReplaceAll(substituteCommand)
+command! -nargs=1 Supplant :call FindOrReplaceAll(<q-args>)
+
+
+function! FindOrReplaceAll(substituteCommand)
     normal! mZ
     let [word, replacement, flags] = ParseArgs(a:substituteCommand)
-    call GrepForWord(word, 1)
-    redraw!
-    call ReplaceAllMatches(word, replacement, flags)
-    call WriteLocationListItems()
+    if ShouldReplaceMatches(replacement, flags)
+        call GrepForWord(word, s:HAS_MAX_COUNT)
+        redraw!
+        call ReplaceAllMatches(word, replacement, flags)
+        call WriteLocationListItems()
+    else
+        call GrepForWord(word, !s:HAS_MAX_COUNT)
+        redraw!
+    endif
     normal! `Z
 endfunction
 
 
-function ShouldReplaceMatches(replacement, flags)
+function! ShouldReplaceMatches(replacement, flags)
     if a:replacement != ''
         return 1
     elseif a:flags != ''
@@ -43,19 +50,18 @@ endfunction
 
 function! ParseArgs(argString)
     let args = split(a:argString, '/')
-    if len(args) < 3
-        let args = args + ['']
+    echo args
+    input('input')
+    if len(args) > 3
+        throw 'Invalid :substitute string'
+    elseif len(args) == 3
+        return args
+    elseif len(args) == 2
+        return args + ['']
+    else
+        return args + [''] + ['']
     endif
     return args
-endfunction
-
-
-function! FindAll(word)
-    normal! mZ
-    call GrepForWord(a:word, -1)
-    redraw!
-    normal! `Z
-    lopen
 endfunction
 
 
@@ -63,9 +69,9 @@ function! GrepForWord(word, maxCount)
     let currentBufferFileExtension = expand('%:e')
     let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
     if g:supplantIgnoreCase
-        let flags = GetCaseInsensitiveGrepFlags(maxCount)
+        let flags = GetCaseInsensitiveGrepFlags(a:maxCount)
     else
-        let flags = GetCaseSensitiveGrepFlags(maxCount)
+        let flags = GetCaseSensitiveGrepFlags(a:maxCount)
     endif
     let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), flags)
     let grepCommand = AddGrepArgs(grepCommand, ConstructIncludeArgs(filetypeGlobs))
@@ -138,7 +144,7 @@ function! ConstructExcludeDirArgs(...)
 endfunction
 
 
-function ConstructExcludeDirArgsFromGlobalSetting()
+function! ConstructExcludeDirArgsFromGlobalSetting()
     if len(g:supplantExcludeDirs) == 0
         return ''
     endif
@@ -150,7 +156,7 @@ function ConstructExcludeDirArgsFromGlobalSetting()
 endfunction
 
 
-function AddExtraExcludeDirArgs(existingArgs, extraDirs)
+function! AddExtraExcludeDirArgs(existingArgs, extraDirs)
     if type(a:extraDirs) != v:t_list
         throw "expected type <list> for arg extraDirs"
     elseif len(a:extraDirs) == 0
@@ -164,7 +170,7 @@ function AddExtraExcludeDirArgs(existingArgs, extraDirs)
 endfunction
 
 
-function ConcatExcludeDirArgs(existingArgs, nextDir)
+function! ConcatExcludeDirArgs(existingArgs, nextDir)
     return a:existingArgs.' --exclude-dir="'.a:nextDir.'"'
 endfunction
 
