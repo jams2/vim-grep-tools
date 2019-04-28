@@ -99,3 +99,51 @@ Execute (ShouldReplaceMatches with no replacement, flags):
 
 Execute (!ShouldReplaceMatches with no replacement or flags):
   AssertEqual 0, ShouldReplaceMatches('', '')
+
+
+Execute (AddGrepArgs concatenates):
+  let expected = 'grepCommand grepArgs'
+  let actual = AddGrepArgs('grepCommand', ' grepArgs')
+  AssertEqual expected, actual
+
+
+Execute (ConstructIncludeArgs no inclusions):
+  AssertEqual '', ConstructIncludeArgs([])
+
+
+Execute (ConstructIncludeArgs throws on incorrect arg type):
+  AssertThrows ConstructIncludeArgs('string')
+
+
+Execute (ConstructIncludeArgs one inclusion):
+  let expected = ' --include="*.py"'
+  AssertEqual expected, ConstructIncludeArgs(['*.py'])
+
+
+Execute (ConstructIncludeArgs multiple inclusions):
+  let expected = ' --include="*.py" --include="*.html"'
+  AssertEqual expected, ConstructIncludeArgs(['*.py', '*.html'])
+
+
+Execute (ConstructExcludeDirArgs no globals or args):
+  let g:supplantExcludeDirs = []
+  let expected = ''
+  AssertEqual expected, ConstructExcludeDirArgs()
+
+
+Execute (ConstructExcludeDirArgs with globals, no args):
+  let g:supplantExcludeDirs = ['node_modules']
+  let expected = ' --exclude-dir="node_modules"'
+  AssertEqual expected, ConstructExcludeDirArgs()
+
+
+Execute (ConstructExcludeDirArgs with args, no globals):
+  let g:supplantExcludeDirs = []
+  let expected = ' --exclude-dir="node_modules" --exclude-dir="staticfiles"'
+  AssertEqual expected, ConstructExcludeDirArgs('node_modules', 'staticfiles')
+
+
+Execute (ConstructExcludeDirArgs with args and globals):
+  let g:supplantExcludeDirs = ['node_modules']
+  let expected = ' --exclude-dir="node_modules" --exclude-dir="staticfiles"'
+  AssertEqual expected, ConstructExcludeDirArgs('staticfiles')
