@@ -1,2 +1,4 @@
 tags
 .pyvenv
+coverage.xml
+.coverage*
