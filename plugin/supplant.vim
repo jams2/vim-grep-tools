@@ -17,6 +17,7 @@ if !exists('g:supplantIgnoreCase')
     let g:supplantIgnoreCase = 0
 endif
 let s:INCLUDE_MAX_COUNT = 1
+let s:MAX_ARGS = 3
 
 
 command! -nargs=1 Supplant :call FindOrReplaceAll(<q-args>)
@@ -34,15 +35,12 @@ endfunction
 
 function! ParseArgs(argString) abort
     let args = split(a:argString, '/')
-    if len(args) > 3
+    if len(args) > s:MAX_ARGS
         throw 'Invalid :substitute string'
-    elseif len(args) == 3
-        return args
-    elseif len(args) == 2
-        return args + ['']
-    else
-        return args + [''] + ['']
     endif
+    while s:MAX_ARGS - len(args) > 0
+        let args += ['']
+    endwhile
     return args
 endfunction
 

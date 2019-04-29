@@ -69,6 +69,20 @@ Execute (parse args empty substitute field and no flags):
   AssertEqual expected, actual
 
 
+Execute (parse args word only):
+  let argString = '/oldWord'
+  let expected = ['oldWord', '', '']
+  let actual = ParseArgs(argString)
+  AssertEqual expected, actual
+
+
+Execute (parse args word only and trailing slash):
+  let argString = '/oldWord/'
+  let expected = ['oldWord', '', '']
+  let actual = ParseArgs(argString)
+  AssertEqual expected, actual
+
+
 Execute (get case sensitive grep flags, with max count):
   AssertEqual ' -r -m1 -e', GetCaseSensitiveGrepFlags(1)
 
