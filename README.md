@@ -48,6 +48,11 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
 - [covimerage](https://github.com/Vimjas/covimerage)
 
 
+## Installation
+
+Use [pathogen](https://github.com/tpope/vim-pathogen): `cd ~/.vim/bundle && git clone https://github.com/jams2/vim-supplant.git`
+
+
 ## Usage
 
 - Ensure GNU Grep is your grepprg. For OSX users, you could put this in your .vimrc:
