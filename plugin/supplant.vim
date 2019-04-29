@@ -6,9 +6,9 @@
 " to a leading-space convention.
 
 
-if exists('g:loadedSupplant')
-    finish
-endif
+" if exists('g:loadedSupplant')
+"     finish
+" endif
 let g:loadedSupplant = 1
 if !exists('g:supplantExcludeDirs') || type(g:supplantExcludeDirs) != v:t_list
     let g:supplantExcludeDirs = []
@@ -21,6 +21,38 @@ let s:MAX_ARGS = 3
 
 
 command! -nargs=1 Supplant :call FindOrReplaceAll(<q-args>)
+
+
+function! FindGitIgnore() abort
+    return findfile('.gitignore', '.;')
+endfunction
+
+
+function! ReadGitIgnore(gitignore) abort
+    if !filereadable(a:gitignore)
+        return []
+    endif
+    return readfile(a:gitignore)
+endfunction
+
+
+function! GetFilesAndDirs(gitIgnores) abort
+    let [fileNames, dirNames] = [[], []]
+    for pattern in a:gitIgnores
+        if strcharpart(pattern, len(pattern)-1, 1) == '/'
+            call add(dirNames, pattern)
+        else
+            call add(fileNames, pattern)
+        endif
+    endfor
+    echo fileNames
+    echo dirNames
+endfunction
+
+
+if !exists('s:gitignore')
+    let s:gitignore = ReadGitIgnore(FindGitIgnore())
+endif
 
 
 function! FindOrReplaceAll(substituteCommand) abort
