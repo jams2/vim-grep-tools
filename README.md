@@ -53,6 +53,14 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
 Use [pathogen](https://github.com/tpope/vim-pathogen): `cd ~/.vim/bundle && git clone https://github.com/jams2/vim-supplant.git`
 
 
+## Configuration
+
+- To add default excluded directories (passed as `--exclude-dir` options to grep);
+    - `let g:supplantExcludeDirs = ['exclude_me', 'and_me']`
+- To set case-sensitivity;
+    - `let g:supplantIgnoreCase = 0` (in {0, 1})
+
+
 ## Usage
 
 - Ensure GNU Grep is your grepprg. For OSX users, you could put this in your .vimrc:
@@ -71,11 +79,3 @@ I have the following in my .vimrc:
 nnoremap <leader>yg "pyiw :Supplant/<C-r>p/
 vnoremap <leader>yg "py :Supplant/<C-r>p/
 ```
-
-
-## Configuration
-
-- To add default excluded directories (passed as `--exclude-dir` options to grep);
-    - `let g:supplantExcludeDirs = ['exclude_me', 'and_me']`
-- To set case-sensitivity;
-    - `let g:supplantIgnoreCase = 0` (in {0, 1})
