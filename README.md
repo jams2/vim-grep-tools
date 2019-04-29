@@ -16,10 +16,22 @@ While using VIM as my primary text editor, I often find myself using `:grep` to 
 ... followed by;
 
 
-`:cdo s/\<SomeClassName\>/NewClassName/g`
+`:cdo s/\<SomeClassName\>/NewClassName/gc`
 
 
-That's 144 keystrokes, and should be automated.
+That's 144 keystrokes, and should be automated. With vim-supplant, you can;
+
+```
+:Supplant/word/replacement/gc
+```
+
+To find and replace all occurences of `word` in files that match the extension of the file in current buffer, or;
+
+```
+:Supplant/word
+```
+
+To find all and populate the Location List with the results.
 
 
 This is a simple tool with narrow scope. If someone else finds it useful, that's fantastic. Feel free to raise issues and requests and I'll do my best to deal with them.
@@ -28,9 +40,12 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
 
 ## Requirements
 
-- GNU Grep (on OSX, this can be obtained via `brew install grep`)
-- [Vader](https://github.com/junegunn/vader.vim) (testing)
+### Usage:
+    - GNU Grep (on OSX, this can be obtained via `brew install grep`)
 
+### Development:
+    - [Vader](https://github.com/junegunn/vader.vim)
+    - [covimerage](https://github.com/Vimjas/covimerage)
 
 
 ## Usage
@@ -43,7 +58,7 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
     ```
 - To find and replace all, execute `:Supplant/oldWord/newWord/flags`
     - where flags are `:substitute` compatible.
-- To find all, execute `:SupplantFindAll word`
+- To find all, execute `:Supplant/word`
 
 
 
