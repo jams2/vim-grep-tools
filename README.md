@@ -41,11 +41,11 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
 ## Requirements
 
 ### Usage:
-    - GNU Grep (on OSX, this can be obtained via `brew install grep`)
+- GNU Grep (on OSX, this can be obtained via `brew install grep`)
 
 ### Development:
-    - [Vader](https://github.com/junegunn/vader.vim)
-    - [covimerage](https://github.com/Vimjas/covimerage)
+- [Vader](https://github.com/junegunn/vader.vim)
+- [covimerage](https://github.com/Vimjas/covimerage)
 
 
 ## Usage
