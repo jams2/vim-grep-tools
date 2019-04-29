@@ -131,7 +131,6 @@ endfunction
 
 
 function! ConstructIncludeArgs(inclusions) abort
-    """ inclusions must be a list.
     if type(a:inclusions) != v:t_list
         throw 'ConstructIncludeArgs expected type <v:t_list>'
     endif
