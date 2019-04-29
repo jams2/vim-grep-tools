@@ -22,7 +22,7 @@ let s:INCLUDE_MAX_COUNT = 1
 command! -nargs=1 Supplant :call FindOrReplaceAll(<q-args>)
 
 
-function! FindOrReplaceAll(substituteCommand)
+function! FindOrReplaceAll(substituteCommand) abort
     let [word, replacement, flags] = ParseArgs(a:substituteCommand)
     if ShouldReplaceMatches(replacement, flags)
         call FindAndReplaceAll(word, replacement, flags)
@@ -32,7 +32,7 @@ function! FindOrReplaceAll(substituteCommand)
 endfunction
 
 
-function! ParseArgs(argString)
+function! ParseArgs(argString) abort
     let args = split(a:argString, '/')
     if len(args) > 3
         throw 'Invalid :substitute string'
@@ -47,7 +47,7 @@ function! ParseArgs(argString)
 endfunction
 
 
-function! ShouldReplaceMatches(replacement, flags)
+function! ShouldReplaceMatches(replacement, flags) abort
     if a:replacement != ''
         return 1
     elseif a:flags != ''
@@ -58,7 +58,7 @@ function! ShouldReplaceMatches(replacement, flags)
 endfunction
 
 
-function! FindAndReplaceAll(word, replacement, flags)
+function! FindAndReplaceAll(word, replacement, flags) abort
     normal! mZ
     call GrepForWord(a:word, s:INCLUDE_MAX_COUNT)
     redraw!
@@ -68,7 +68,7 @@ function! FindAndReplaceAll(word, replacement, flags)
 endfunction
 
 
-function! FindAll(word)
+function! FindAll(word) abort
     normal! mZ
     call GrepForWord(a:word, !s:INCLUDE_MAX_COUNT)
     redraw!
@@ -78,7 +78,7 @@ function! FindAll(word)
 endfunction
 
 
-function! GrepForWord(word, maxCount)
+function! GrepForWord(word, maxCount) abort
     let currentBufferFileExtension = expand('%:e')
     let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
     if g:supplantIgnoreCase
@@ -93,12 +93,12 @@ function! GrepForWord(word, maxCount)
 endfunction
 
 
-function! GetFileTypeGlob(fileExtension)
+function! GetFileTypeGlob(fileExtension) abort
     return '*.'.a:fileExtension
 endfunction
 
 
-function! GetCaseInsensitiveGrepFlags(maxCount)
+function! GetCaseInsensitiveGrepFlags(maxCount) abort
     let flags = ' -ri'
     if a:maxCount > 0
         let flags = flags.' -m'.a:maxCount
@@ -107,7 +107,7 @@ function! GetCaseInsensitiveGrepFlags(maxCount)
 endfunction
 
 
-function! GetCaseSensitiveGrepFlags(maxCount)
+function! GetCaseSensitiveGrepFlags(maxCount) abort
     let flags = ' -r'
     if a:maxCount > 0
         let flags = flags.' -m'.a:maxCount
@@ -116,23 +116,23 @@ function! GetCaseSensitiveGrepFlags(maxCount)
 endfunction
 
 
-function! ConstructGrepCommand(grepPattern, grepFlags)
+function! ConstructGrepCommand(grepPattern, grepFlags) abort
     let searchDir = ' .'
     return 'silent lgrep'.a:grepFlags.a:grepPattern.searchDir
 endfunction
 
 
-function! WordToGrepPattern(word)
+function! WordToGrepPattern(word) abort
     return ' "\b'.a:word.'\b"'
 endfunction
 
 
-function! AddGrepArgs(grepCommand, grepArgs)
+function! AddGrepArgs(grepCommand, grepArgs) abort
     return a:grepCommand.a:grepArgs
 endfunction
 
 
-function! ConstructIncludeArgs(inclusions)
+function! ConstructIncludeArgs(inclusions) abort
     """ inclusions must be a list.
     if type(a:inclusions) != v:t_list
         throw 'ConstructIncludeArgs expected type <v:t_list>'
@@ -148,7 +148,7 @@ function! ConstructIncludeArgs(inclusions)
 endfunction
 
 
-function! ConstructExcludeDirArgs(...)
+function! ConstructExcludeDirArgs(...) abort
     let excludeDirArgs = ConstructExcludeDirArgsFromGlobalSetting()
     if len(a:000) > 0
         let excludeDirArgs = AddExtraExcludeDirArgs(excludeDirArgs, a:000)
@@ -157,7 +157,7 @@ function! ConstructExcludeDirArgs(...)
 endfunction
 
 
-function! ConstructExcludeDirArgsFromGlobalSetting()
+function! ConstructExcludeDirArgsFromGlobalSetting() abort
     if len(g:supplantExcludeDirs) == 0
         return ''
     endif
@@ -169,7 +169,7 @@ function! ConstructExcludeDirArgsFromGlobalSetting()
 endfunction
 
 
-function! AddExtraExcludeDirArgs(existingArgs, extraDirs)
+function! AddExtraExcludeDirArgs(existingArgs, extraDirs) abort
     if type(a:extraDirs) != v:t_list
         throw "expected type <list> for arg extraDirs"
     elseif len(a:extraDirs) == 0
@@ -183,19 +183,19 @@ function! AddExtraExcludeDirArgs(existingArgs, extraDirs)
 endfunction
 
 
-function! ConcatExcludeDirArgs(existingArgs, nextDir)
+function! ConcatExcludeDirArgs(existingArgs, nextDir) abort
     return a:existingArgs.' --exclude-dir="'.a:nextDir.'"'
 endfunction
 
 
-function! AddFindAllLocationListMessage(word)
+function! AddFindAllLocationListMessage(word) abort
     let matchCount = len(getloclist(0))
     let title = 'Supplant found '.matchCount.' occurences of "'.a:word.'"'
     call setloclist(0, [], 'r', {'title': title})
 endfunction
 
 
-function! ReplaceAllMatches(word, replacement, flags)
+function! ReplaceAllMatches(word, replacement, flags) abort
     if len(getloclist(0)) == 0
         return
     endif
@@ -204,12 +204,12 @@ function! ReplaceAllMatches(word, replacement, flags)
 endfunction
 
 
-function! GetLocListSubstituteCommand(word, replacement, flags)
+function! GetLocListSubstituteCommand(word, replacement, flags) abort
     let caseSensitiveFlag = g:supplantIgnoreCase ? '\c' : '\C'
     return 'lfdo %s/'.caseSensitiveFlag.'\<'.a:word.'\>/'.a:replacement.'/'.a:flags
 endfunction
 
 
-function! WriteLocationListItems()
+function! WriteLocationListItems() abort
     execute 'lfdo! update'
 endfunction
