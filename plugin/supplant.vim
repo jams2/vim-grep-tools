@@ -6,34 +6,44 @@
 " to a leading-space convention.
 
 
+if exists('g:loadedSupplant')
+    finish
+endif
+let g:loadedSupplant = 1
 if !exists('g:supplantExcludeDirs') || type(g:supplantExcludeDirs) != v:t_list
     let g:supplantExcludeDirs = []
 endif
-
 if !exists('g:supplantIgnoreCase')
     let g:supplantIgnoreCase = 0
 endif
-
-
-let s:HAS_MAX_COUNT = 1
+let s:INCLUDE_MAX_COUNT = 1
 
 
 command! -nargs=1 Supplant :call FindOrReplaceAll(<q-args>)
 
 
 function! FindOrReplaceAll(substituteCommand)
-    normal! mZ
     let [word, replacement, flags] = ParseArgs(a:substituteCommand)
     if ShouldReplaceMatches(replacement, flags)
-        call GrepForWord(word, s:HAS_MAX_COUNT)
-        redraw!
-        call ReplaceAllMatches(word, replacement, flags)
-        call WriteLocationListItems()
+        call FindAndReplaceAll(word, replacement, flags)
     else
-        call GrepForWord(word, !s:HAS_MAX_COUNT)
-        redraw!
+        call FindAll(word)
     endif
-    normal! `Z
+endfunction
+
+
+function! ParseArgs(argString)
+    let args = split(a:argString, '/')
+    if len(args) > 3
+        throw 'Invalid :substitute string'
+    elseif len(args) == 3
+        return args
+    elseif len(args) == 2
+        return args + ['']
+    else
+        return args + [''] + ['']
+    endif
+    return args
 endfunction
 
 
@@ -48,20 +58,21 @@ function! ShouldReplaceMatches(replacement, flags)
 endfunction
 
 
-function! ParseArgs(argString)
-    let args = split(a:argString, '/')
-    echo args
-    input('input')
-    if len(args) > 3
-        throw 'Invalid :substitute string'
-    elseif len(args) == 3
-        return args
-    elseif len(args) == 2
-        return args + ['']
-    else
-        return args + [''] + ['']
-    endif
-    return args
+function! FindAndReplaceAll(word, replacement, flags)
+    normal! mZ
+    call GrepForWord(a:word, s:INCLUDE_MAX_COUNT)
+    redraw!
+    call ReplaceAllMatches(a:word, a:replacement, a:flags)
+    call WriteLocationListItems()
+    normal! `Z
+endfunction
+
+
+function! FindAll(word)
+    normal! mZ
+    call GrepForWord(word, !s:INCLUDE_MAX_COUNT)
+    redraw!
+    normal! `Z
 endfunction
 
 
