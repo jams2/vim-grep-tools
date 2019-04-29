@@ -51,15 +51,21 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
 ## Usage
 
 - Ensure GNU Grep is your grepprg. For OSX users, you could put this in your .vimrc:
-    ```
-    if executable("ggrep")
-        set grepprg=ggrep\ -n
-    endif
-    ```
+```
+if executable("ggrep")
+    set grepprg=ggrep\ -n
+endif
+```
 - To find and replace all, execute `:Supplant/oldWord/newWord/flags`
     - where flags are `:substitute` compatible.
 - To find all, execute `:Supplant/word`
 
+
+I have the following in my .vimrc:
+```
+nnoremap <leader>yg "pyiw :Supplant/<C-r>p/
+vnoremap <leader>yg "py :Supplant/<C-r>p/
+```
 
 
 ## Configuration
@@ -68,12 +74,3 @@ This is a simple tool with narrow scope. If someone else finds it useful, that's
     - `let g:supplantExcludeDirs = ['exclude_me', 'and_me']`
 - To set case-sensitivity;
     - `let g:supplantIgnoreCase = 0` (in {0, 1})
-
-
-Suggested mappings:
-```
-nnoremap <leader>yg "pyiw :Supplant/<C-r>p
-vnoremap <leader>yg "py :Supplant/<C-r>p
-nnoremap <leader>ff "pyiw :SupplantFindAll <C-r>p<CR>
-vnoremap <leader>ff "py :SupplantFindAll <C-r>p<CR>
-```
