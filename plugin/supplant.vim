@@ -78,14 +78,6 @@ function! FindAll(word)
 endfunction
 
 
-function! AddFindAllLocationListMessage(word)
-    let matchCount = len(getloclist(0))
-    let title = 'Supplant found '.matchCount.' occurences of "'.a:word.'"'
-    let locListEntry = {'title': title}
-    call setloclist(0, [], 'r', locListEntry)
-endfunction
-
-
 function! GrepForWord(word, maxCount)
     let currentBufferFileExtension = expand('%:e')
     let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
@@ -101,19 +93,17 @@ function! GrepForWord(word, maxCount)
 endfunction
 
 
-function! WordToGrepPattern(word)
-    return ' "\b'.a:word.'\b"'
-endfunction
-
-
 function! GetFileTypeGlob(fileExtension)
     return '*.'.a:fileExtension
 endfunction
 
 
-function! ConstructGrepCommand(grepPattern, grepFlags)
-    let searchDir = ' .'
-    return 'silent lgrep'.a:grepFlags.a:grepPattern.searchDir
+function! GetCaseInsensitiveGrepFlags(maxCount)
+    let flags = ' -ri'
+    if a:maxCount > 0
+        let flags = flags.' -m'.a:maxCount
+    endif
+    return flags.' -e'
 endfunction
 
 
@@ -126,12 +116,14 @@ function! GetCaseSensitiveGrepFlags(maxCount)
 endfunction
 
 
-function! GetCaseInsensitiveGrepFlags(maxCount)
-    let flags = ' -ri'
-    if a:maxCount > 0
-        let flags = flags.' -m'.a:maxCount
-    endif
-    return flags.' -e'
+function! ConstructGrepCommand(grepPattern, grepFlags)
+    let searchDir = ' .'
+    return 'silent lgrep'.a:grepFlags.a:grepPattern.searchDir
+endfunction
+
+
+function! WordToGrepPattern(word)
+    return ' "\b'.a:word.'\b"'
 endfunction
 
 
@@ -193,6 +185,13 @@ endfunction
 
 function! ConcatExcludeDirArgs(existingArgs, nextDir)
     return a:existingArgs.' --exclude-dir="'.a:nextDir.'"'
+endfunction
+
+
+function! AddFindAllLocationListMessage(word)
+    let matchCount = len(getloclist(0))
+    let title = 'Supplant found '.matchCount.' occurences of "'.a:word.'"'
+    call setloclist(0, [], 'r', {'title': title})
 endfunction
 
 
