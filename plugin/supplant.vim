@@ -70,9 +70,19 @@ endfunction
 
 function! FindAll(word)
     normal! mZ
-    call GrepForWord(word, !s:INCLUDE_MAX_COUNT)
+    call GrepForWord(a:word, !s:INCLUDE_MAX_COUNT)
     redraw!
     normal! `Z
+    call AddFindAllLocationListMessage(a:word)
+    lopen
+endfunction
+
+
+function! AddFindAllLocationListMessage(word)
+    let matchCount = len(getloclist(0))
+    let title = 'Supplant found '.matchCount.' occurences of "'.a:word.'"'
+    let locListEntry = {'title': title}
+    call setloclist(0, [], 'r', locListEntry)
 endfunction
 
 
