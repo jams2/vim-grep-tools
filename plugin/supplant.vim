@@ -4,6 +4,14 @@
 " 
 " When constructing strings that might be concatenated together, stick
 " to a leading-space convention.
+"
+"
+" TODO:
+" - add a substitute flag parser, add handling for an [f|F] flag:
+"   [f] search in all filetypes, [F] search only in files matching current
+"   buffer
+" - handle grep compatibility
+"
 
 
 " if exists('g:loadedSupplant')
@@ -17,7 +25,7 @@ if !exists('g:supplantIgnoreCase')
     let g:supplantIgnoreCase = 0
 endif
 let s:INCLUDE_MAX_COUNT = 1
-let s:MAX_ARGS = 3
+let s:MAX_COMMAND_ARGS = 3
 
 
 command! -nargs=1 Supplant :call FindOrReplaceAll(<q-args>)
@@ -39,7 +47,7 @@ endfunction
 function! GetFilesAndDirs(gitIgnores) abort
     let [fileNames, dirNames] = [[], []]
     for pattern in a:gitIgnores
-        if strcharpart(pattern, len(pattern)-1, 1) == '/'
+        if GetLastChar(pattern) == '/'
             call add(dirNames, pattern)
         else
             call add(fileNames, pattern)
@@ -47,6 +55,11 @@ function! GetFilesAndDirs(gitIgnores) abort
     endfor
     echo fileNames
     echo dirNames
+endfunction
+
+
+function! GetLastChar(string) abort
+    return strcharpart(a:string, len(a:string)-1, 1)
 endfunction
 
 
@@ -67,10 +80,10 @@ endfunction
 
 function! ParseArgs(argString) abort
     let args = split(a:argString, '/')
-    if len(args) > s:MAX_ARGS
+    if len(args) > s:MAX_COMMAND_ARGS
         throw 'Invalid :substitute string'
     endif
-    while s:MAX_ARGS - len(args) > 0
+    while s:MAX_COMMAND_ARGS - len(args) > 0
         let args += ['']
     endwhile
     return args
@@ -98,9 +111,7 @@ endfunction
 
 
 function! FindAll(word) abort
-    normal! mZ
     call GrepForWord(a:word, !s:INCLUDE_MAX_COUNT)
-    normal! `Z
     call AddFindAllLocationListMessage(a:word)
     lopen
 endfunction
