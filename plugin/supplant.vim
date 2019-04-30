@@ -91,7 +91,6 @@ endfunction
 function! FindAndReplaceAll(word, replacement, flags) abort
     normal! mZ
     call GrepForWord(a:word, s:INCLUDE_MAX_COUNT)
-    redraw!
     call ReplaceAllMatches(a:word, a:replacement, a:flags)
     call WriteLocationListItems()
     normal! `Z
@@ -101,7 +100,6 @@ endfunction
 function! FindAll(word) abort
     normal! mZ
     call GrepForWord(a:word, !s:INCLUDE_MAX_COUNT)
-    redraw!
     normal! `Z
     call AddFindAllLocationListMessage(a:word)
     lopen
@@ -119,7 +117,7 @@ function! GrepForWord(word, maxCount) abort
     let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), flags)
     let grepCommand = AddGrepArgs(grepCommand, ConstructIncludeArgs(filetypeGlobs))
     let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs())
-    execute grepCommand
+    execute "lgetexpr system('".grepCommand."')"
 endfunction
 
 
@@ -148,7 +146,7 @@ endfunction
 
 function! ConstructGrepCommand(grepPattern, grepFlags) abort
     let searchDir = ' .'
-    return 'silent lgrep'.a:grepFlags.a:grepPattern.searchDir
+    return &grepprg.a:grepFlags.a:grepPattern.searchDir
 endfunction
 
 
