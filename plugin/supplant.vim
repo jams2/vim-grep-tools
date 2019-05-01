@@ -51,6 +51,9 @@ endfunction
 
 
 function! ParseArgs(argString) abort
+    if HasExtraFlags(a:argString)
+        " do something with it.
+    endif
     let args = split(a:argString, '/')
     if len(args) > s:MAX_COMMAND_ARGS
         throw 'Invalid :substitute string'
@@ -59,6 +62,11 @@ function! ParseArgs(argString) abort
         let args += ['']
     endwhile
     return args
+endfunction
+
+
+function! HasExtraFlags(argString)
+    return len(split(a:argString, ' -')) > 1
 endfunction
 
 
