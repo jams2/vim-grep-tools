@@ -8,22 +8,26 @@ function! GrepCommand(argString) abort
                 \ 'word': '',
                 \ 'replacement': '',
                 \ 'flags': '',
-                \ 'ParseArgs': function('ParseArgs'),
-                \ 'HasExtraFlags': {argString -> len(split(argString, ' -')) > 1},
-                \ 'HandleExtraFlags': function('HandleExtraFlags'),
+                \ 'namedParams': '',
+                \ '_init': function('Init'),
+                \ 'parseArgs': function('ParseArgs'),
+                \ 'hasExtraFlags': {argString -> len(split(argString, ' -')) > 1},
+                \ 'handleExtraFlags': function('HandleExtraFlags'),
+                \ 'addNamedParameters': function('AddNamedParameters'),
                 \ }
-
-    let [grepCommand.word, grepCommand.replacement, grepCommand.flags] = 
-                \ grepCommand.ParseArgs()
-
-
+    call grepCommand._init()
     return grepCommand
 endfunction
 
 
-function! ParseArgs() abort dict
-    if self.HasExtraFlags(self.argString)
-        call self.HandleExtraFlags()
+function Init() dict abort
+    let [self.word, self.replacement, self.flags] = self.parseArgs()
+endfunction
+
+
+function! ParseArgs() dict abort
+    if self.hasExtraFlags(self.argString)
+        call self.handleExtraFlags()
     endif
     let args = split(self.argString, '/')
     if len(args) > s:MAX_COMMAND_ARGS
@@ -35,10 +39,24 @@ function! ParseArgs() abort dict
     return args
 endfunction
 
-function! HandleExtraFlags() abort dict
+
+function! HandleExtraFlags() dict abort
     let splitArgs = split(self.argString, ' -')
     let extraFlags = remove(splitArgs, 1, -1)
     if index(extraFlags, 'f') >= 0
         let self.restrictFiletype = 0
     endif
+endfunction
+
+
+function! AddNamedParameters(values, parameter) dict abort
+    if type(a:values) != v:t_list
+        throw 'ConstructNamedParameters expected type <v:t_list>'
+    endif
+    if len(a:values) == 0
+        return ''
+    endif
+    for value in a:values
+        let self.namedParams = self.namedParams.' --'.a:parameter.'="'.value.'"'
+    endfor
 endfunction
