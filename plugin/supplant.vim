@@ -26,6 +26,7 @@ if !exists('g:supplantIgnoreCase')
 endif
 let s:INCLUDE_MAX_COUNT = 1
 let s:MAX_COMMAND_ARGS = 3
+let s:INCLUDE_BUFFER_FILETYPE = 1
 
 
 command! -nargs=1 Supplant :call FindOrReplaceAll(<q-args>)
@@ -53,8 +54,7 @@ function! GetFilesAndDirs(gitIgnores) abort
             call add(fileNames, pattern)
         endif
     endfor
-    echo fileNames
-    echo dirNames
+    return [fileNames, dirNames]
 endfunction
 
 
@@ -63,16 +63,18 @@ function! GetLastChar(string) abort
 endfunction
 
 
-if !exists('s:gitignore')
-    let s:gitignore = ReadGitIgnore(FindGitIgnore())
+if !exists('s:gitignoreFiles') && !exists('s:gitignoreDirs')
+    let [s:gitignoreFiles, s:gitignoreDirs] = GetFilesAndDirs(ReadGitIgnore(FindGitIgnore()))
 endif
 
 
 function! FindOrReplaceAll(substituteCommand) abort
     let [word, replacement, flags] = ParseArgs(a:substituteCommand)
     if ShouldReplaceMatches(replacement, flags)
+        let s:INCLUDE_BUFFER_FILETYPE = 1
         call FindAndReplaceAll(word, replacement, flags)
     else
+        let s:INCLUDE_BUFFER_FILETYPE = 0
         call FindAll(word)
     endif
 endfunction
@@ -125,8 +127,9 @@ function! GrepForWord(word, maxCount) abort
         let flags = GetCaseSensitiveGrepFlags(a:maxCount)
     endif
     let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), flags)
-    let grepCommand = AddGrepArgs(grepCommand, ConstructIncludeArgs(filetypeGlobs))
-    let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs())
+    let grepCommand = AddGrepArgs(grepCommand, ConstructNamedParameters(filetypeGlobs, 'include'))
+    let grepCommand = AddGrepArgs(grepCommand, ConstructNamedParameters(s:gitignoreFiles, 'exclude'))
+    let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs(s:gitignoreDirs))
     execute "silent lgetexpr system('".grepCommand."')"
 endfunction
 
@@ -170,25 +173,25 @@ function! AddGrepArgs(grepCommand, grepArgs) abort
 endfunction
 
 
-function! ConstructIncludeArgs(inclusions) abort
-    if type(a:inclusions) != v:t_list
-        throw 'ConstructIncludeArgs expected type <v:t_list>'
+function! ConstructNamedParameters(values, parameter) abort
+    if type(a:values) != v:t_list
+        throw 'ConstructNamedParameters expected type <v:t_list>'
     endif
-    if len(a:inclusions) == 0
+    if len(a:values) == 0
         return ''
     endif
-    let includeArgs = ''
-    for inclusion in a:inclusions
-        let includeArgs = includeArgs . ' --include="'.inclusion.'"'
+    let args = ''
+    for value in a:values
+        let args = args . ' --'.a:parameter.'="'.value.'"'
     endfor
-    return includeArgs
+    return args
 endfunction
 
 
 function! ConstructExcludeDirArgs(...) abort
     let excludeDirArgs = ConstructExcludeDirArgsFromGlobalSetting()
     if len(a:000) > 0
-        let excludeDirArgs = AddExtraExcludeDirArgs(excludeDirArgs, a:000)
+        let excludeDirArgs = AddExtraExcludeDirArgs(excludeDirArgs, a:1)
     endif
     return excludeDirArgs
 endfunction
