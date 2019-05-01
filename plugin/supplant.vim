@@ -113,7 +113,6 @@ endfunction
 function! FindAll(word) abort
     call GrepForWord(a:word, !s:INCLUDE_MAX_COUNT)
     call AddFindAllLocationListMessage(a:word)
-    lopen
 endfunction
 
 
@@ -128,7 +127,7 @@ function! GrepForWord(word, maxCount) abort
     let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), flags)
     let grepCommand = AddGrepArgs(grepCommand, ConstructIncludeArgs(filetypeGlobs))
     let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs())
-    execute "lgetexpr system('".grepCommand."')"
+    execute "silent lgetexpr system('".grepCommand."')"
 endfunction
 
 
