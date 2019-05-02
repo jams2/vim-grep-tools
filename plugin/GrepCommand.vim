@@ -12,11 +12,13 @@ function! GrepCommand(argString) abort
                 \ 'flags': '',
                 \ 'namedParams': '',
                 \ '_command': '',
+                \ '_grepFlags': '',
                 \ '_init': function('Init'),
                 \ '_parseArgs': function('ParseArgs'),
-                \ '_isSearchOnly': {-> self.replacement == '' && self.flags == ''},
+                \ '_isSearchOnly': function('IsSearchOnly'),
                 \ '_getGrepPrg': function('GetGrepPrg'),
                 \ '_getGrepFlags': function('GetGrepFlags'),
+                \ '_getGrepPattern': function('GetGrepPattern'),
                 \ '_hasExtraFlags': {argString -> len(split(argString, ' -')) > 1},
                 \ '_handleExtraFlags': function('HandleExtraFlags'),
                 \ 'addNamedParameters': function('AddNamedParameters'),
@@ -29,8 +31,12 @@ endfunction
 
 function Init() dict abort
     let [self.word, self.replacement, self.flags] = self._parseArgs()
+    echo self.flags
     let self.grepMaxCount = self._isSearchOnly() ? 0 : 1
-    let self._command = self._getGrepPrg() . self._getGrepFlags()
+    let self._command = self._getGrepPrg()
+    let self._grepFlags = self._getGrepFlags()
+    let self._grepPattern = self._getGrepPattern()
+    echo self.flags
 endfunction
 
 
@@ -49,13 +55,19 @@ function! ParseArgs() dict abort
 endfunction
 
 
+function! IsSearchOnly() dict abort
+    return self.replacement == '' && self.flags == ''
+endfunction
+
+
 function! HandleExtraFlags() dict abort
     let splitArgs = split(self.argString, ' -')
     let extraFlags = remove(splitArgs, 1, -1)
+    echo extraFlags
     " handle bunched flags, like -ri
     if index(extraFlags, 'f') >= 0
         let self.restrictFiletype = 0
-    else if index(extraFlags, 'i') >= 0
+    elseif index(extraFlags, 'i') >= 0
         let self.ignoreCase = 0
     endif
 endfunction
@@ -75,6 +87,7 @@ endfunction
 
 
 function! ToString() dict abort
+    return self._command . self._grepFlags . self._grepPattern . self.namedParams
 endfunction
 
 
@@ -90,4 +103,8 @@ function! GetGrepFlags() dict abort
     endif
     let flags = flags.' -e'
     return flags
+endfunction
+
+function! GetGrepPattern() dict abort
+    return ' "\b' . self.word . '/b"'
 endfunction
