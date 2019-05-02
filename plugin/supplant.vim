@@ -46,28 +46,23 @@ endfunction
 
 function! FindAndReplaceAll(grepCommand) abort
     normal! mZ
-    call GrepForWord(a:word, s:INCLUDE_MAX_COUNT)
-    call ReplaceAllMatches(a:word, a:replacement, a:flags)
+    call GrepForWord(a:grepCommand)
+    "call ReplaceAllMatches(a:word, a:replacement, a:flags)
     call WriteLocationListItems()
     normal! `Z
 endfunction
 
 
 function! FindAll(grepCommand) abort
-    call GrepForWord(a:word, !s:INCLUDE_MAX_COUNT)
-    call AddFindAllLocationListMessage(a:word)
+    call GrepForWord(a:grepCommand)
+    call AddFindAllLocationListMessage('word')
 endfunction
 
 
 function! GrepForWord(word, maxCount) abort
     let currentBufferFileExtension = expand('%:e')
     let filetypeGlobs = [GetFileTypeGlob(currentBufferFileExtension)]
-    if g:supplantIgnoreCase
-        let flags = GetCaseInsensitiveGrepFlags(a:maxCount)
-    else
-        let flags = GetCaseSensitiveGrepFlags(a:maxCount)
-    endif
-    let grepCommand = ConstructGrepCommand(WordToGrepPattern(a:word), flags)
+
     let grepCommand = AddGrepArgs(grepCommand, ConstructNamedParameters(filetypeGlobs, 'include'))
     let grepCommand = AddGrepArgs(grepCommand, ConstructNamedParameters(s:gitignoreFiles, 'exclude'))
     let grepCommand = AddGrepArgs(grepCommand, ConstructExcludeDirArgs(s:gitignoreDirs))

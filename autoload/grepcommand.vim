@@ -24,8 +24,8 @@ function! grepcommand#GrepCommand(argString) abort
                 \ '_parseModifiers': function('s:ParseModifiers'),
                 \ '_removeModifiersFromArgString':
                     \ function('s:RemoveModifiersFromArgString'),
-                \ 's:AddNamedParameters': function('s:AddNamedParameters'),
-                \ 's:ToString': function('s:ToString'),
+                \ 'addNamedParameters': function('s:AddNamedParameters'),
+                \ 'toString': function('s:ToString'),
                 \ }
     call grepCommand._init()
     return grepCommand
