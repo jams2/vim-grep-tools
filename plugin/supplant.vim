@@ -31,10 +31,8 @@ let s:INCLUDE_BUFFER_FILETYPE = 1
 
 command! -nargs=1 Supplant :call FindOrReplaceAll(<q-args>)
 
-source getGitIgnore.vim
 if !exists('s:gitignoreFiles') && !exists('s:gitignoreDirs')
     let [s:gitignoreFiles, s:gitignoreDirs] = GetFilesAndDirs(ReadGitIgnore(FindGitIgnore()))
-    echo s:gitignoreDirs
 endif
 
 
