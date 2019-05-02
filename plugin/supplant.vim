@@ -24,12 +24,10 @@ endif
 if !exists('g:supplantIgnoreCase')
     let g:supplantIgnoreCase = 0
 endif
-let s:INCLUDE_MAX_COUNT = 1
-let s:MAX_COMMAND_ARGS = 3
-let s:INCLUDE_BUFFER_FILETYPE = 1
 
 
 command! -nargs=1 Supplant :call FindOrReplaceAll(<q-args>)
+
 
 if !exists('s:gitignoreFiles') && !exists('s:gitignoreDirs')
     let [s:gitignoreFiles, s:gitignoreDirs] = GetFilesAndDirs(ReadGitIgnore(FindGitIgnore()))
@@ -37,49 +35,16 @@ endif
 
 
 function! FindOrReplaceAll(substituteCommand) abort
-    let [word, replacement, flags] = ParseArgs(a:substituteCommand)
-    if ShouldReplaceMatches(replacement, flags)
-        let s:INCLUDE_BUFFER_FILETYPE = 1
-        call FindAndReplaceAll(word, replacement, flags)
+    let grepCommand = grepcommand#GrepCommand(a:substituteCommand)
+    if grepCommand.hasReplacementParams()
+        call FindAndReplaceAll(grepCommand)
     else
-        let s:INCLUDE_BUFFER_FILETYPE = 0
-        call FindAll(word)
+        call FindAll(grepCommand)
     endif
 endfunction
 
 
-function! ParseArgs(argString) abort
-    if HasExtraFlags(a:argString)
-        " do something with it.
-    endif
-    let args = split(a:argString, '/')
-    if len(args) > s:MAX_COMMAND_ARGS
-        throw 'Invalid :substitute string'
-    endif
-    while s:MAX_COMMAND_ARGS - len(args) > 0
-        let args += ['']
-    endwhile
-    return args
-endfunction
-
-
-function! HasExtraFlags(argString)
-    return len(split(a:argString, ' -')) > 1
-endfunction
-
-
-function! ShouldReplaceMatches(replacement, flags) abort
-    if a:replacement != ''
-        return 1
-    elseif a:flags != ''
-        return 1
-    else
-        return 0
-    endif
-endfunction
-
-
-function! FindAndReplaceAll(word, replacement, flags) abort
+function! FindAndReplaceAll(grepCommand) abort
     normal! mZ
     call GrepForWord(a:word, s:INCLUDE_MAX_COUNT)
     call ReplaceAllMatches(a:word, a:replacement, a:flags)
@@ -88,7 +53,7 @@ function! FindAndReplaceAll(word, replacement, flags) abort
 endfunction
 
 
-function! FindAll(word) abort
+function! FindAll(grepCommand) abort
     call GrepForWord(a:word, !s:INCLUDE_MAX_COUNT)
     call AddFindAllLocationListMessage(a:word)
 endfunction
