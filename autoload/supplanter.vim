@@ -22,6 +22,7 @@ function supplanter#Supplanter(argString) abort
                 \ '_validateArgs': function('s:ValidateArgs'),
                 \ '_initGrepCommand': function('s:InitGrepCommand'),
                 \ }
+    call l:supplanter._init()
     return l:supplanter
 endfunction
 
@@ -76,5 +77,5 @@ endfunction
 
 
 function s:InitGrepCommand() dict abort
-    let l:grepCommand = grepcommand#GrepCommand(self.argString)
+    let l:grepCommand = grepcommand#GrepCommand(self.word)
 endfunction
