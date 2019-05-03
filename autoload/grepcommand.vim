@@ -1,3 +1,6 @@
+let s:CWD = ' .'
+
+
 function! grepcommand#GrepCommand(word) abort
     let l:grepCommand = {
                 \ 'word': a:word,
@@ -38,7 +41,7 @@ endfunction
 
 
 function s:GetGrepPattern() dict abort
-    return ' "\b' . self.word . '/b"'
+    return ' "\b' . self.word . '\b"'
 endfunction
 
 
@@ -68,6 +71,6 @@ endfunction
 
 function s:ToString() dict abort
     let asString = self._GetGrepPrg() . self._GetGrepFlags() .
-                \ self._GetGrepPattern() . self._namedParams
+                \ self._GetGrepPattern() . s:CWD . self._namedParams
     return asString
 endfunction
