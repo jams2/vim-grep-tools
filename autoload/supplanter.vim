@@ -25,6 +25,7 @@ function supplanter#Supplanter(argString) abort
                 \ 'AddExcludeDirGlobs': function('s:AddExcludeDirGlobs'),
                 \ 'AddExcludeGlobs': function('s:AddExcludeGlobs'),
                 \ 'AddIncludeGlobs': function('s:AddIncludeGlobs'),
+                \ 'FindAll': function('s:FindAll'),
                 \ }
     call l:supplanter._Init()
     return l:supplanter
@@ -119,4 +120,9 @@ function s:AddIncludeGlobs(globs) dict abort
         throw 'AddIncludeGlobs expected type <v:t_list>'
     endif
     call self.grepCommand.AddNamedParameters('include', a:globs)
+endfunction
+
+
+function s:FindAll() dict abort
+    execute "lgetexpr system('" . self.grepCommand.ToString() . "')"
 endfunction
