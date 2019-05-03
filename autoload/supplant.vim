@@ -1,4 +1,5 @@
 function supplant#Supplant(argString) abort
+    normal! mZ
     let l:supplanter = supplanter#Supplanter(a:argString)
     if l:supplanter.shouldMatchFileExtension && s:BufferContainsFile()
         let l:fileExtensionGlobs = [s:GetBufferFileExtensionGlob()]
@@ -10,8 +11,10 @@ function supplant#Supplant(argString) abort
     call l:supplanter.FindAll()
     if l:supplanter.shouldReplaceMatches
         call l:supplanter.ReplaceAll()
+        normal! `Z
     else
         call s:AddFindAllLocationListMessage(l:supplanter.word)
+        lopen
     endif
 endfunction
 
