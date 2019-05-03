@@ -22,9 +22,6 @@ function supplanter#Supplanter(argString) abort
                 \ '_ValidateArgs': function('s:ValidateArgs'),
                 \ '_InitGrepCommand': function('s:InitGrepCommand'),
                 \ '_HasReplacementParams': function('s:HasReplacementParams'),
-                \ '_excludeGlobs': [],
-                \ '_excludeDirGlobs': [],
-                \ '_includeGlobs': [],
                 \ 'AddExcludeDirGlobs': function('s:AddExcludeDirGlobs'),
                 \ 'AddExcludeGlobs': function('s:AddExcludeGlobs'),
                 \ 'AddIncludeGlobs': function('s:AddIncludeGlobs'),
@@ -97,7 +94,7 @@ endfunction
 
 
 function s:HasReplacementParams() dict abort
-    return self.replacement != '' && self.flags != ''
+    return self.replacement != '' && self.substituteFlags != ''
 endfunction
 
 
@@ -105,7 +102,7 @@ function s:AddExcludeGlobs(globs) dict abort
     if type(a:globs) != v:t_list
         throw 'AddExcludeGlobs expected type <v:t_list>'
     endif
-    let self._excludeGlobs += a:globs
+    call self.grepCommand.AddNamedParameters('exclude', a:globs)
 endfunction
 
 
@@ -113,7 +110,7 @@ function s:AddExcludeDirGlobs(globs) dict abort
     if type(a:globs) != v:t_list
         throw 'AddExcludeDirGlobs expected type <v:t_list>'
     endif
-    let self._excludeDirGlobs += a:globs
+    call self.grepCommand.AddNamedParameters('exclude-dir', a:globs)
 endfunction
 
 
@@ -121,5 +118,5 @@ function s:AddIncludeGlobs(globs) dict abort
     if type(a:globs) != v:t_list
         throw 'AddIncludeGlobs expected type <v:t_list>'
     endif
-    let self._includeGlobs += a:globs
+    call self.grepCommand.AddNamedParameters('include', a:globs)
 endfunction
