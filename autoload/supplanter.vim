@@ -9,7 +9,7 @@ function supplanter#Supplanter(argString) abort
                 \ 'word': '',
                 \ 'replacement': '',
                 \ 'substituteFlags': '',
-                \ 'grepCaseSensitivity': 1,
+                \ 'isCaseSensitive': 1,
                 \ 'shouldMatchFileExtension': 1,
                 \ '_Init': function('s:InitSupplanter'),
                 \ '_ParseAndRemoveModifiers':
@@ -26,6 +26,10 @@ function supplanter#Supplanter(argString) abort
                 \ 'AddExcludeGlobs': function('s:AddExcludeGlobs'),
                 \ 'AddIncludeGlobs': function('s:AddIncludeGlobs'),
                 \ 'FindAll': function('s:FindAll'),
+                \ 'ReplaceAll': function('s:ReplaceAll'),
+                \ 'GetLocListSubstituteCommand':
+                    \ function('s:GetLocListSubstituteCommand'),
+                \ 'DidFindMatches': function('s:DidFindMatches'),
                 \ }
     call l:supplanter._Init()
     return l:supplanter
@@ -35,8 +39,9 @@ endfunction
 function s:InitSupplanter() dict abort
     call self._ParseAndRemoveModifiers()
     call self._ParseArgs()
+    let self.shouldReplaceMatches = self._HasReplacementParams()
     let self.grepCommand = self._InitGrepCommand()
-    call self.grepCommand.SetCaseSensitivity(self.grepCaseSensitivity)
+    call self.grepCommand.SetCaseSensitivity(self.isCaseSensitive)
     call self.grepCommand.SetLimitsResultsPerFile(self._HasReplacementParams())
 endfunction
 
@@ -61,7 +66,7 @@ function s:ParseModifiers() dict abort
     if index(extraFlags, 'f') >= 0
         let self.shouldMatchFileExtension = 0
     elseif index(extraFlags, 'i') >= 0
-        let self.grepCaseSensitivity = 0
+        let self.isCaseSensitive = 0
     endif
 endfunction
 
@@ -125,4 +130,23 @@ endfunction
 
 function s:FindAll() dict abort
     execute "lgetexpr system('" . self.grepCommand.ToString() . "')"
+endfunction
+
+
+function s:ReplaceAll() dict abort
+    if !self.DidFindMatches()
+        return
+    endif
+    execute self.GetLocListSubstituteCommand()
+endfunction
+
+
+function s:DidFindMatches() dict abort
+    return len(getloclist(0)) > 0
+endfunction
+
+
+function s:GetLocListSubstituteCommand() dict abort
+    return 'lfdo %s/\<' . self.word . '\>/' . self.replacement . '/' .
+                \ self.substituteFlags
 endfunction
