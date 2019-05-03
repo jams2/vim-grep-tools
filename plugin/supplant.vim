@@ -29,11 +29,6 @@ endif
 command! -nargs=1 Supplant :call FindOrReplaceAll(<q-args>)
 
 
-if !exists('s:gitignoreFiles') && !exists('s:gitignoreDirs')
-    let [s:gitignoreFiles, s:gitignoreDirs] = GetFilesAndDirs(ReadGitIgnore(FindGitIgnore()))
-endif
-
-
 function! FindOrReplaceAll(substituteCommand) abort
     let grepCommand = grepcommand#GrepCommand(a:substituteCommand)
     if grepCommand.hasReplacementParams()

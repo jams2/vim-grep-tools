@@ -6,21 +6,21 @@ function! grepcommand#GrepCommand(word) abort
                 \ '_isCaseSensitive': 1,
                 \ '_limitsResultsPerFile': 1,
                 \ '_grepFlags': '',
-                \ '_getGrepPrg': function('s:GetGrepPrg'),
-                \ '_getGrepFlags': function('s:GetGrepFlags'),
-                \ '_getGrepPattern': function('s:GetGrepPattern'),
-                \ 'setCaseSensitivity': function('s:SetCaseSensitivity'),
-                \ 'setLimitsResultsPerFile': function('s:SetLimitsResultsPerFile'),
-                \ 'addNamedParameters': function('s:AddNamedParameters'),
-                \ 'toString': function('s:ToString'),
+                \ '_GetGrepPrg': function('s:GetGrepPrg'),
+                \ '_GetGrepFlags': function('s:GetGrepFlags'),
+                \ '_GetGrepPattern': function('s:GetGrepPattern'),
+                \ 'SetCaseSensitivity': function('s:SetCaseSensitivity'),
+                \ 'SetLimitsResultsPerFile': function('s:SetLimitsResultsPerFile'),
+                \ 'AddNamedParameters': function('s:AddNamedParameters'),
+                \ 'ToString': function('s:ToString'),
                 \ }
     return l:grepCommand
 endfunction
 
 
 function s:InitGrepCommand() dict abort
-    let self._command = self._getGrepPrg()
-    let self._grepPattern = self._getGrepPattern()
+    let self._command = self._GetGrepPrg()
+    let self._grepPattern = self._GetGrepPattern()
 endfunction
 
 
@@ -67,7 +67,7 @@ endfunction
 
 
 function s:ToString() dict abort
-    let asString = self._getGrepPrg() . self._getGrepFlags() .
-                \ self._getGrepPattern() . self._namedParams
+    let asString = self._GetGrepPrg() . self._GetGrepFlags() .
+                \ self._GetGrepPattern() . self._namedParams
     return asString
 endfunction

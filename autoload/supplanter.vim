@@ -11,36 +11,42 @@ function supplanter#Supplanter(argString) abort
                 \ 'substituteFlags': '',
                 \ 'grepCaseSensitivity': 1,
                 \ 'grepMatchFileExtension': 1,
-                \ '_init': function('s:InitSupplanter'),
-                \ '_parseAndRemoveModifiers':
+                \ '_Init': function('s:InitSupplanter'),
+                \ '_ParseAndRemoveModifiers':
                     \ function('s:ParseAndRemoveModifiers'),
-                \ '_hasModifiers': function('s:HasModifiers'),
-                \ '_parseModifiers': function('s:ParseModifiers'),
-                \ '_removeModifiersFromArgString':
+                \ '_HasModifiers': function('s:HasModifiers'),
+                \ '_ParseModifiers': function('s:ParseModifiers'),
+                \ '_RemoveModifiersFromArgString':
                     \ function('s:RemoveModifiersFromArgString'),
-                \ '_parseArgs': function('s:ParseArgs'),
-                \ '_validateArgs': function('s:ValidateArgs'),
-                \ '_initGrepCommand': function('s:InitGrepCommand'),
-                \ '_hasReplacementParams': function('s:HasReplacementParams'),
+                \ '_ParseArgs': function('s:ParseArgs'),
+                \ '_ValidateArgs': function('s:ValidateArgs'),
+                \ '_InitGrepCommand': function('s:InitGrepCommand'),
+                \ '_HasReplacementParams': function('s:HasReplacementParams'),
+                \ '_excludeGlobs': [],
+                \ '_excludeDirGlobs': [],
+                \ '_includeGlobs': [],
+                \ 'AddExcludeDirGlobs': function('s:AddExcludeDirGlobs'),
+                \ 'AddExcludeGlobs': function('s:AddExcludeGlobs'),
+                \ 'AddIncludeGlobs': function('s:AddIncludeGlobs'),
                 \ }
-    call l:supplanter._init()
+    call l:supplanter._Init()
     return l:supplanter
 endfunction
 
 
 function s:InitSupplanter() dict abort
-    call self._parseAndRemoveModifiers()
-    call self._parseArgs()
-    let self.grepCommand = self._initGrepCommand()
-    call self.grepCommand.setCaseSensitivity(self.grepCaseSensitivity)
-    call self.grepCommand.setLimitsResultsPerFile(self._hasReplacementParams())
+    call self._ParseAndRemoveModifiers()
+    call self._ParseArgs()
+    let self.grepCommand = self._InitGrepCommand()
+    call self.grepCommand.SetCaseSensitivity(self.grepCaseSensitivity)
+    call self.grepCommand.SetLimitsResultsPerFile(self._HasReplacementParams())
 endfunction
 
 
 function s:ParseAndRemoveModifiers() dict abort
-    if self._hasModifiers()
-        call self._parseModifiers()
-        call self._removeModifiersFromArgString() 
+    if self._HasModifiers()
+        call self._ParseModifiers()
+        call self._RemoveModifiersFromArgString() 
     endif
 endfunction
 
@@ -69,7 +75,7 @@ endfunction
 
 function s:ParseArgs() dict abort
     let l:args = split(self.argString, '/')
-    call self._validateArgs(l:args)
+    call self._ValidateArgs(l:args)
     while s:MAX_COMMAND_ARGS - len(l:args) > 0
         let l:args += ['']
     endwhile
@@ -92,4 +98,28 @@ endfunction
 
 function s:HasReplacementParams() dict abort
     return self.replacement != '' && self.flags != ''
+endfunction
+
+
+function s:AddExcludeGlobs(globs) dict abort
+    if type(a:globs) != v:t_list
+        throw 'AddExcludeGlobs expected type <v:t_list>'
+    endif
+    let self._excludeGlobs += a:globs
+endfunction
+
+
+function s:AddExcludeDirGlobs(globs) dict abort
+    if type(a:globs) != v:t_list
+        throw 'AddExcludeDirGlobs expected type <v:t_list>'
+    endif
+    let self._excludeDirGlobs += a:globs
+endfunction
+
+
+function s:AddIncludeGlobs(globs) dict abort
+    if type(a:globs) != v:t_list
+        throw 'AddIncludeGlobs expected type <v:t_list>'
+    endif
+    let self._includeGlobs += a:globs
 endfunction
