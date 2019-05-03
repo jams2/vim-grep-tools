@@ -55,7 +55,7 @@ function s:SetLimitsResultsPerFile(limitsResultsPerFile) dict abort
 endfunction
 
 
-function s:AddNamedParameters(values, parameter) dict abort
+function s:AddNamedParameters(parameter, values) dict abort
     if type(a:values) != v:t_list
         throw 'ConstructNamedParameters expected type <v:t_list>'
     endif
