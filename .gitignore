@@ -3,3 +3,4 @@ tags
 .venv/
 coverage.xml
 .coverage*
+.git
