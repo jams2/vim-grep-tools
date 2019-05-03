@@ -6,9 +6,12 @@
 " to a leading-space convention.
 
 
-" if exists('g:loadedSupplant')
-"     finish
-" endif
+if v:version < 700
+    echomsg 'supplant requires VIM >= 700'
+elseif exists('g:loadedSupplant')
+    finish
+endif
+let g:loadedSupplant = 1
 
 
 command! -nargs=1 Supplant :call supplant#Supplant(<q-args>)
