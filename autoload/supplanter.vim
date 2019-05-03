@@ -10,7 +10,7 @@ function supplanter#Supplanter(argString) abort
                 \ 'replacement': '',
                 \ 'substituteFlags': '',
                 \ 'grepCaseSensitivity': 1,
-                \ 'grepMatchFileExtension': 1,
+                \ 'shouldMatchFileExtension': 1,
                 \ '_Init': function('s:InitSupplanter'),
                 \ '_ParseAndRemoveModifiers':
                     \ function('s:ParseAndRemoveModifiers'),
@@ -61,7 +61,7 @@ function s:ParseModifiers() dict abort
     let extraFlags = remove(splitArgs, 1, -1)
     " handle bunched flags, like -fi
     if index(extraFlags, 'f') >= 0
-        let self.grepMatchFileExtension = 0
+        let self.shouldMatchFileExtension = 0
     elseif index(extraFlags, 'i') >= 0
         let self.grepCaseSensitivity = 0
     endif
