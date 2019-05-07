@@ -5,9 +5,12 @@ function supplant#Supplant(argString) abort
         let l:fileExtensionGlobs = [s:GetBufferFileExtensionGlob()]
         call l:supplanter.AddIncludeGlobs(l:fileExtensionGlobs)
     endif
-    let [l:ignoreFiles, l:ignoreDirs] = getgitignore#GetFilesAndDirs()
-    call l:supplanter.AddExcludeDirGlobs(l:ignoreDirs)
-    call l:supplanter.AddExcludeGlobs(l:ignoreFiles)
+    for dirList in [g:gitIgnoreDirs, g:supplantIgnoreDirs]
+        call l:supplanter.AddExcludeDirGlobs(dirList)
+    endfor
+    for fileList in [g:gitIgnoreFiles, g:supplantIgnoreFiles]
+        call l:supplanter.AddExcludeGlobs(fileList)
+    endfor
     call l:supplanter.FindAll()
     if l:supplanter.shouldReplaceMatches
         call l:supplanter.ReplaceAll()
