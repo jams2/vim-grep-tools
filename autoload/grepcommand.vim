@@ -60,7 +60,7 @@ function s:AddNamedParameters(parameter, values) dict abort
         throw 'ConstructNamedParameters expected type <v:t_list>'
     endif
     if len(a:values) == 0
-        return ''
+        return
     endif
     for value in a:values
         let self._namedParams = self._namedParams . ' --' . a:parameter .'="'
