@@ -1,0 +1,23 @@
+Execute (test detects filetype ignore modifier):
+  let supplanter = supplanter#Supplanter('/pattern/ -f')
+  AssertEqual 0, supplanter.shouldMatchFileExtension
+
+Execute (test detects case ignore modifier):
+  let supplanter = supplanter#Supplanter('/pattern/ -i')
+  AssertEqual 0, supplanter.isCaseSensitive
+
+Execute (test detects filetype ignore, both flags passed):
+  let supplanter = supplanter#Supplanter('/pattern/ -i -f')
+  AssertEqual 0, supplanter.shouldMatchFileExtension
+
+Execute (test detects case ignore, both flags passed):
+  let supplanter = supplanter#Supplanter('/pattern/ -i -f')
+  AssertEqual 0, supplanter.isCaseSensitive
+
+Execute (test detects case ignore, flags concatenated):
+  let supplanter = supplanter#Supplanter('/pattern/ -if')
+  AssertEqual 0, supplanter.isCaseSensitive
+
+Execute (test detects filetype ignore, flags concatenated):
+  let supplanter = supplanter#Supplanter('/pattern/ -if')
+  AssertEqual 0, supplanter.shouldMatchFileExtension
