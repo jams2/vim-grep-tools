@@ -14,6 +14,7 @@ function supplant#Supplant(argString) abort
     call l:supplanter.FindAll()
     if l:supplanter.shouldReplaceMatches
         call l:supplanter.ReplaceAll()
+        call s:WriteLocationListItems()
         normal! `Z
     else
         call s:AddFindAllLocationListMessage(l:supplanter.word)
@@ -39,7 +40,7 @@ function! s:AddFindAllLocationListMessage(word) abort
 endfunction
 
 
-function! WriteLocationListItems() abort
+function! s:WriteLocationListItems() abort
     execute 'lfdo! update'
 endfunction
 
