@@ -20,13 +20,11 @@ endfunction
 
 function! s:GetFilesAndDirs(gitIgnores) abort
     let [l:fileNames, l:dirNames] = [[], []]
-    for pattern in a:gitIgnores
-        if s:GetFirstChar(pattern) == '#' || pattern == ''
-            continue
-        elseif s:GetLastChar(pattern) == '/'
-            call add(l:dirNames, pattern)
+    for line in a:gitIgnores
+        if s:GetLastChar(line) == '/'
+            call add(l:dirNames, s:StripLastChar(line))
         else
-            call add(l:fileNames, pattern)
+            call add(l:fileNames, line)
         endif
     endfor
     return [l:fileNames, l:dirNames]
@@ -40,4 +38,7 @@ endfunction
 
 function! s:GetFirstChar(string) abort
     return strcharpart(a:string, 0, 1)
+endfunction
+function! s:StripLastChar(string) abort
+    return strcharpart(a:string, 0, len(a:string)-1)
 endfunction
