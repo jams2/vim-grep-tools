@@ -30,6 +30,7 @@ function supplanter#Supplanter(argString) abort
                 \ 'GetLocListSubstituteCommand':
                     \ function('s:GetLocListSubstituteCommand'),
                 \ 'DidFindMatches': function('s:DidFindMatches'),
+                \ 'SlashIsDelimiter': function('s:SlashIsDelimiter'),
                 \ }
     call l:supplanter._Init()
     return l:supplanter
@@ -77,17 +78,31 @@ endfunction
 
 
 function s:ParseArgs() dict abort
-    let l:args = split(self.argString, '/')
-    call self._ValidateArgs(l:args)
-    while s:MAX_COMMAND_ARGS - len(l:args) > 0
-        let l:args += ['']
+    call self.ValidateArgs()
+    let destVars = ['word', 'replacement', 'substituteFlags']
+    let argLen = len(self.argString)
+    let [start, end] = [0, 1]
+    while end < argLen
+        if end == argLen - 1
+            if self.argString[end] == '/'
+                let lastCharIndex = self.SlashIsDelimiter(self.argString, end) ? end - 1: end
+            else
+                let lastCharIndex = end
+            endif
+            let self[remove(destVars, 0)] = self.argString[start+1:lastCharIndex]
+        endif
+        let end += 1
     endwhile
-    let [self.word, self.replacement, self.substituteFlags] = l:args
 endfunction
 
 
-function s:ValidateArgs(args) dict abort
-    if len(a:args) > s:MAX_COMMAND_ARGS
+function s:SlashIsDelimiter(string, index) dict abort
+    return !supplantUtils#CharIsEscaped(a:string, a:index)
+endfunction
+
+
+function s:ValidateArgs() dict abort
+    if supplantUtils#GetFirstChar(self.argString) != '/'
         throw 'Supplanter: Invalid :substitute string'
     endif
 endfunction
