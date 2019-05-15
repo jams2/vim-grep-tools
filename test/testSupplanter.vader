@@ -31,3 +31,57 @@ Execute (test parses args; pattern, replacement and flags):
 Execute (test parses args; pattern only, trailing slash):
   let supplanter = supplanter#Supplanter('/pattern/')
   AssertEqual 'pattern', supplanter.word
+
+Execute (test parses args; pattern and flags):
+  let supplanter = supplanter#Supplanter('/pattern//gc')
+  AssertEqual 'pattern', supplanter.word
+  AssertEqual '', supplanter.replacement
+  AssertEqual 'gc', supplanter.substituteFlags
+
+Execute (test parses args; pattern, replacement and flags):
+  let supplanter = supplanter#Supplanter('/pattern/replacement/gc')
+  AssertEqual 'pattern', supplanter.word
+  AssertEqual 'replacement', supplanter.replacement
+  AssertEqual 'gc', supplanter.substituteFlags
+
+Execute (test parses args; pattern, replacement, no flags, no trailing slash):
+  let supplanter = supplanter#Supplanter('/pattern/replacement')
+  AssertEqual 'pattern', supplanter.word
+  AssertEqual 'replacement', supplanter.replacement
+  AssertEqual '', supplanter.substituteFlags
+
+Execute (test parses args; pattern, replacement, no flags, trailing slash):
+  let supplanter = supplanter#Supplanter('/pattern/replacement/')
+  AssertEqual 'pattern', supplanter.word
+  AssertEqual 'replacement', supplanter.replacement
+  AssertEqual '', supplanter.substituteFlags
+
+Execute (test parses args; pattern has space):
+  let supplanter = supplanter#Supplanter('/pa ttern/replacement/')
+  AssertEqual 'pa ttern', supplanter.word
+  AssertEqual 'replacement', supplanter.replacement
+  AssertEqual '', supplanter.substituteFlags
+
+Execute (test parses args; replacement has space):
+  let supplanter = supplanter#Supplanter('/pattern/replacement /')
+  AssertEqual 'pattern', supplanter.word
+  AssertEqual 'replacement ', supplanter.replacement
+  AssertEqual '', supplanter.substituteFlags
+
+Execute (test parses args; pattern has slashes):
+  let supplanter = supplanter#Supplanter('/pat\/tern\//replacement/')
+  AssertEqual 'pat/tern/', supplanter.word
+  AssertEqual 'replacement', supplanter.replacement
+  AssertEqual '', supplanter.substituteFlags
+
+Execute (test parses args; replacement has slash):
+  let supplanter = supplanter#Supplanter('/pattern/\/replace\/ment/')
+  AssertEqual 'pattern', supplanter.word
+  AssertEqual '/replace/ment', supplanter.replacement
+  AssertEqual '', supplanter.substituteFlags
+
+Execute (test parses args; has escaped backslashes):
+  let supplanter = supplanter#Supplanter('/pat\\tern/replacement/')
+  AssertEqual 'pat\tern', supplanter.word
+  AssertEqual 'replacement', supplanter.replacement
+  AssertEqual '', supplanter.substituteFlags

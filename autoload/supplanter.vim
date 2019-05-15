@@ -31,6 +31,7 @@ function supplanter#Supplanter(argString) abort
                     \ function('s:GetLocListSubstituteCommand'),
                 \ 'DidFindMatches': function('s:DidFindMatches'),
                 \ 'SlashIsDelimiter': function('s:SlashIsDelimiter'),
+                \ 'RemoveEscapes': function('s:RemoveEscapes'),
                 \ }
     call l:supplanter.InitSupplanter()
     return l:supplanter
@@ -91,10 +92,22 @@ function s:ParseArgs() dict abort
             else
                 let lastCharIndex = end
             endif
-            let self[remove(destVars, 0)] = self.argString[start+1:lastCharIndex]
+            let self[remove(destVars, 0)] = self.RemoveEscapes(self.argString[start+1:lastCharIndex])
+        elseif self.argString[end] == '/'
+            if self.SlashIsDelimiter(self.argString, end)
+                let self[remove(destVars, 0)] = self.RemoveEscapes(self.argString[start+1:end-1])
+                let start = end
+            endif
         endif
         let end += 1
     endwhile
+endfunction
+
+
+function s:ValidateArgs() dict abort
+    if supplantUtils#GetFirstChar(self.argString) != '/'
+        throw 'Supplanter: Invalid :substitute string'
+    endif
 endfunction
 
 
@@ -103,10 +116,8 @@ function s:SlashIsDelimiter(string, index) dict abort
 endfunction
 
 
-function s:ValidateArgs() dict abort
-    if supplantUtils#GetFirstChar(self.argString) != '/'
-        throw 'Supplanter: Invalid :substitute string'
-    endif
+function s:RemoveEscapes(string) dict abort
+    return substitute(a:string, '\(\\\)\([^\\]\)', '\2', 'g')
 endfunction
 
 
