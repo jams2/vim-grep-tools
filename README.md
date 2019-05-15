@@ -25,14 +25,15 @@ That's 144 keystrokes, and should be automated. With vim-supplant, you can;
 :Supplant/word/replacement/gc
 ```
 
-To find and replace all occurences of `word` in files that match the extension of the file in current buffer, or;
+(to find and replace all occurences of `word` in files that match the extension of the file in current buffer) or;
 
 ```
 :Supplant/word
 ```
 
-To find all and populate the Location List with the results.
+(to find all and populate the Location List with the results).
 
+To search in files of all types, pass a `-f` flag, and to do a case-insensitive grep, pass `-i`.
 
 This is a simple tool with narrow scope. If someone else finds it useful, that's fantastic. Feel free to raise issues and requests and I'll do my best to deal with them.
 

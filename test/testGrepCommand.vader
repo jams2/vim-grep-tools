@@ -2,5 +2,5 @@
 
 
 Execute (ParseArgs detects filetype modifier):
-  let gc = GrepCommand('/pattern/replacement/gc -f')
+  let gc = grepcommand#GrepCommand('/pattern/replacement/gc -f')
   AssertEqual 0, gc.restrictFiletype

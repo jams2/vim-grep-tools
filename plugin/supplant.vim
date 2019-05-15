@@ -13,5 +13,21 @@ elseif exists('g:loadedSupplant')
 endif
 let g:loadedSupplant = 1
 
+if !exists('g:supplantParseGitIgnore')
+    let g:supplantParseGitIgnore = 1
+endif
+
+if g:supplantParseGitIgnore && !exists('g:gitIgnoreFiles') && !exists('g:gitIgnoreDirs')
+    let [g:gitIgnoreFiles, g:gitIgnoreDirs] = getgitignore#GetFilesAndDirs()
+endif
+
+if !exists('g:supplantIgnoreFiles')
+    let g:supplantIgnoreFiles = []
+endif
+
+if !exists('g:supplantIgnoreDirs')
+    let g:supplantIgnoreDirs = []
+endif
+
 
 command! -nargs=1 Supplant :call supplant#Supplant(<q-args>)

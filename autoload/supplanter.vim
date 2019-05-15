@@ -11,17 +11,17 @@ function supplanter#Supplanter(argString) abort
                 \ 'substituteFlags': '',
                 \ 'isCaseSensitive': 1,
                 \ 'shouldMatchFileExtension': 1,
-                \ '_Init': function('s:InitSupplanter'),
-                \ '_ParseAndRemoveModifiers':
+                \ 'InitSupplanter': function('s:InitSupplanter'),
+                \ 'ParseAndRemoveModifiers':
                     \ function('s:ParseAndRemoveModifiers'),
-                \ '_HasModifiers': function('s:HasModifiers'),
-                \ '_ParseModifiers': function('s:ParseModifiers'),
-                \ '_RemoveModifiersFromArgString':
+                \ 'HasModifiers': function('s:HasModifiers'),
+                \ 'ParseModifiers': function('s:ParseModifiers'),
+                \ 'RemoveModifiersFromArgString':
                     \ function('s:RemoveModifiersFromArgString'),
-                \ '_ParseArgs': function('s:ParseArgs'),
-                \ '_ValidateArgs': function('s:ValidateArgs'),
-                \ '_InitGrepCommand': function('s:InitGrepCommand'),
-                \ '_HasReplacementParams': function('s:HasReplacementParams'),
+                \ 'ParseArgs': function('s:ParseArgs'),
+                \ 'ValidateArgs': function('s:ValidateArgs'),
+                \ 'InitGrepCommand': function('s:InitGrepCommand'),
+                \ 'HasReplacementParams': function('s:HasReplacementParams'),
                 \ 'AddExcludeDirGlobs': function('s:AddExcludeDirGlobs'),
                 \ 'AddExcludeGlobs': function('s:AddExcludeGlobs'),
                 \ 'AddIncludeGlobs': function('s:AddIncludeGlobs'),
@@ -32,25 +32,25 @@ function supplanter#Supplanter(argString) abort
                 \ 'DidFindMatches': function('s:DidFindMatches'),
                 \ 'SlashIsDelimiter': function('s:SlashIsDelimiter'),
                 \ }
-    call l:supplanter._Init()
+    call l:supplanter.InitSupplanter()
     return l:supplanter
 endfunction
 
 
 function s:InitSupplanter() dict abort
-    call self._ParseAndRemoveModifiers()
-    call self._ParseArgs()
-    let self.shouldReplaceMatches = self._HasReplacementParams()
-    let self.grepCommand = self._InitGrepCommand()
+    call self.ParseAndRemoveModifiers()
+    call self.ParseArgs()
+    let self.shouldReplaceMatches = self.HasReplacementParams()
+    let self.grepCommand = self.InitGrepCommand()
     call self.grepCommand.SetCaseSensitivity(self.isCaseSensitive)
-    call self.grepCommand.SetLimitsResultsPerFile(self._HasReplacementParams())
+    call self.grepCommand.SetLimitsResultsPerFile(self.HasReplacementParams())
 endfunction
 
 
 function s:ParseAndRemoveModifiers() dict abort
-    if self._HasModifiers()
-        call self._ParseModifiers()
-        call self._RemoveModifiersFromArgString() 
+    if self.HasModifiers()
+        call self.ParseModifiers()
+        call self.RemoveModifiersFromArgString() 
     endif
 endfunction
 
@@ -63,12 +63,14 @@ endfunction
 function s:ParseModifiers() dict abort
     let splitArgs = split(self.argString, ' -')
     let extraFlags = remove(splitArgs, 1, -1)
-    " handle bunched flags, like -fi
-    if index(extraFlags, 'f') >= 0
-        let self.shouldMatchFileExtension = 0
-    elseif index(extraFlags, 'i') >= 0
-        let self.isCaseSensitive = 0
-    endif
+    for flag in extraFlags
+        if match(flag, 'f') >= 0
+            let self.shouldMatchFileExtension = 0
+        endif
+        if match(flag, 'i') >= 0
+            let self.isCaseSensitive = 0
+        endif
+    endfor
 endfunction
 
 
