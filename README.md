@@ -4,39 +4,24 @@
 [![Version: 0.1.0](https://img.shields.io/badge/version-0.1.0-brightgreen.svg)](https://github.com/jams2/vim-super-substitute)
 
 
-`vim-supplant` is a tool for replacing all occurences of a word in the current working directory, using the familiar syntax of VIM's `:substitute`.
+`vim-supplant` is a tool for finding and, optionally, replacing all occurences of a `word` in the current working directory, using the familiar syntax of VIM's `:substitute`. It's a simple wrapper around the usage of grep and the location list. It will ignore files and directories in your .gitignore by default.
 
 
-While using VIM as my primary text editor, I often find myself using `:grep` to find all occurences of a word. I will execute something like;
+## Usage
 
-
-`:grep -ri "\bSomeClassName\b" . --include="*.py" --exclude-dir="staticfiles" --exclude-dir="node_modules"`
-
-
-... followed by;
-
-
-`:cdo s/\<SomeClassName\>/NewClassName/gc`
-
-
-That's 144 keystrokes, and should be automated. With vim-supplant, you can;
-
+- Ensure GNU Grep is your grepprg. For OSX users, you could put this in your .vimrc:
 ```
-:Supplant/word/replacement/gc
+if executable("ggrep")
+    set grepprg=ggrep\ -n
+endif
 ```
-
-(to find and replace all occurences of `word` in files that match the extension of the file in current buffer) or;
-
-```
-:Supplant/word
-```
-
-(to find all and populate the Location List with the results).
-
-To search in files of all types, pass a `-f` flag, and to do a case-insensitive grep, pass `-i`.
-
-This is a simple tool with narrow scope. If someone else finds it useful, that's fantastic. Feel free to raise issues and requests and I'll do my best to deal with them.
-
+- To find and replace all, execute `:Supplant/oldWord/newWord/flags`
+    - where flags are `:substitute` compatible.
+- To find all, execute `:Supplant/word`
+- Default behaviour is to search only in files matching the extension of the current buffer. To disregard filetypes, pass `-f`:
+    - `:Supplant/word -f`
+- To perform a case-insensitive grep, pass `-i`;
+    - `:Supplant/word -i`
 
 
 ## Requirements
@@ -58,21 +43,10 @@ Use [pathogen](https://github.com/tpope/vim-pathogen): `cd ~/.vim/bundle && git 
 
 - To add default excluded directories (passed as `--exclude-dir` options to grep);
     - `let g:supplantExcludeDirs = ['exclude_me', 'and_me']`
-- To set case-sensitivity;
-    - `let g:supplantIgnoreCase = 0` (in {0, 1})
-
-
-## Usage
-
-- Ensure GNU Grep is your grepprg. For OSX users, you could put this in your .vimrc:
-```
-if executable("ggrep")
-    set grepprg=ggrep\ -n
-endif
-```
-- To find and replace all, execute `:Supplant/oldWord/newWord/flags`
-    - where flags are `:substitute` compatible.
-- To find all, execute `:Supplant/word`
+- To add default excluded files (passed as `--exclude` options to grep);
+    - `let g:supplantExcludeFiles = ['exclude_me', 'and_me']`
+- To bypass gitignore parsing;
+    - `let g:supplantParseGitIgnore = 0`
 
 
 I have the following in my .vimrc:
