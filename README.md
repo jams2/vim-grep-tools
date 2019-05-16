@@ -17,7 +17,7 @@ endif
 ```
 - To find and replace all, execute `:Supplant/oldWord/newWord/flags`
     - where flags are `:substitute` compatible.
-- To find all, execute `:Supplant/word`
+- To find all, and populate location list with results, execute `:Supplant/word`
 - Default behaviour is to search only in files matching the extension of the current buffer. To disregard filetypes, pass `-f`:
     - `:Supplant/word -f`
 - To perform a case-insensitive grep, pass `-i`;
