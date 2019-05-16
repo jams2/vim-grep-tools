@@ -1,3 +1,8 @@
+Execute (test detects specified filetype):
+  let supplanter = supplanter#Supplanter('/pattern/ -F vim')
+  AssertEqual 1, supplanter.shouldMatchFileExtension
+  AssertEqual ['*.vim'], supplanter.includes
+
 Execute (test detects filetype ignore modifier):
   let supplanter = supplanter#Supplanter('/pattern/ -f')
   AssertEqual 0, supplanter.shouldMatchFileExtension

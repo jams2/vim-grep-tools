@@ -11,6 +11,7 @@ function supplanter#Supplanter(argString) abort
                 \ 'substituteFlags': '',
                 \ 'isCaseSensitive': 1,
                 \ 'shouldMatchFileExtension': 1,
+                \ 'includes': [],
                 \ 'InitSupplanter': function('s:InitSupplanter'),
                 \ 'ParseAndRemoveModifiers':
                     \ function('s:ParseAndRemoveModifiers'),
@@ -65,10 +66,20 @@ function s:ParseModifiers() dict abort
     let splitArgs = split(self.argString, ' -')
     let extraFlags = remove(splitArgs, 1, -1)
     for flag in extraFlags
-        if match(flag, 'f') >= 0
+        let patterns = ['\CF', '\Cf', 'i']
+        let [flag_F, flag_f, flag_i] = map(patterns, {_, val -> match(flag, val)})
+        if flag_F >= 0 && flag_f >= 0
+            throw 'Supplanter got conflicting flags: f, F'
+        elseif flag_f >= 0
             let self.shouldMatchFileExtension = 0
+        elseif flag_F >= 0
+            let space = match(flag, '\w')
+            let startIndex = (space > flag_F ? space : flag_F) + 1
+            let ftInclude = flag[startIndex:]
+            let ftInclude = ftInclude[0] == '.' ? '*'.ftInclude : '*.'.ftInclude
+            let self.includes = add(self.includes, ftInclude) 
         endif
-        if match(flag, 'i') >= 0
+        if flag_i >= 0
             let self.isCaseSensitive = 0
         endif
     endfor
@@ -117,6 +128,7 @@ endfunction
 
 
 function s:RemoveEscapes(string) dict abort
+    " Replace \/ with /, for example.
     return substitute(a:string, '\(\\\)\([^\\]\)', '\2', 'g')
 endfunction
 
