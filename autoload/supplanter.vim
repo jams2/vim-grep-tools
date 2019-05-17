@@ -33,6 +33,7 @@ function supplanter#Supplanter(argString) abort
                 \ 'DidFindMatches': function('s:DidFindMatches'),
                 \ 'SlashIsDelimiter': function('s:SlashIsDelimiter'),
                 \ 'RemoveEscapes': function('s:RemoveEscapes'),
+                \ 'GetModifiersFromCommand': function('s:GetModifiersFromCommand'),
                 \ }
     call l:supplanter.InitSupplanter()
     return l:supplanter
@@ -58,13 +59,26 @@ endfunction
 
 
 function s:HasModifiers() dict abort
-    return len(split(self.argString, ' -')) > 1
+    return len(split(self.argString, ' ')) > 1
 endfunction
 
 
 function s:ParseModifiers() dict abort
-    let splitArgs = split(self.argString, ' -')
-    let extraFlags = remove(splitArgs, 1, -1)
+    let modString = self.GetModifiersFromCommand()
+    let modAtoms = []
+    let [start, end] = [0, 1]
+    let strLen = len(modString)
+    while end < strLen
+        if end == strLen
+            let modAtoms = add(modAtoms, modString[start+1:end])
+        elseif modString[end] =~ '\w' && modString[end+1] == '-'
+            "complete modifier
+            let modAtoms
+        endif
+        let end += 1
+    endwhile
+
+    while 
     for flag in extraFlags
         let patterns = ['\CF', '\Cf', 'i']
         let [flag_F, flag_f, flag_i] = map(patterns, {_, val -> match(flag, val)})
@@ -83,6 +97,15 @@ function s:ParseModifiers() dict abort
             let self.isCaseSensitive = 0
         endif
     endfor
+endfunction
+
+
+function s:GetModifiersFromCommand() dict abort
+    return trim(self.argString[match(self.argString, '\s') + 1:])
+endfunction
+
+
+function s:HandleModifier(modifier) dict abort
 endfunction
 
 
